@@ -23,12 +23,14 @@ def register(user: UserData):
         return result
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
-    except Exception:
-        raise HTTPException(
-            status_code=500,
-            detail="Registration failed"
-        )
-
+    
+except Exception:
+    import logging
+    logging.exception("Registration failed")
+    raise HTTPException(
+        status_code=500,
+        detail="Registration failed"
+    )
 
 @app.post("/login")
 def login(user: UserData):
