@@ -24,3 +24,18 @@ def mailbox(owner, sent=False):
     with get_connection() as conn:
         rows = conn.execute("SELECT id,sender,recipient,subject,body,created_at FROM messages WHERE "+field+"=%s ORDER BY id DESC LIMIT 50", (owner,)).fetchall()
     return [{"id":r[0],"from":r[1],"to":r[2],"subject":r[3],"body":r[4],"date":r[5].isoformat()} for r in rows]
+
+def deliver_many(sender, recipients, subject, body):
+    recipients = list(dict.fromkeys(recipients))
+    if not 1 <= len(recipients) <= 25 or any(type(r) is not int or r < 1 for r in recipients):
+        raise ValueError("Enter 1 to 25 valid RKU IDs")
+    with get_connection() as conn:
+        rows = conn.execute("SELECT rku_id FROM users WHERE rku_id = ANY(%s)", (recipients,)).fetchall()
+        found = {row[0] for row in rows}
+        missing = [r for r in recipients if r not in found]
+        if missing:
+            raise ValueError("Unknown RKU ID: " + ", ".join(map(str, missing)))
+        for recipient in recipients:
+            conn.execute("INSERT INTO messages(sender,recipient,subject,body) VALUES (%s,%s,%s,%s)",
+                         (sender,recipient,subject,body))
+    return len(recipients)
