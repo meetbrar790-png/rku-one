@@ -15,8 +15,8 @@ def authenticated_id(authorization):
         if not hmac.compare_digest(signature,expected):
             raise ValueError()
         data=json.loads(base64.urlsafe_b64decode(payload+"="*(-len(payload)%4)))
-        if int(data["exp"]) < time.time() or not isinstance(data["id"],int):
+        if (type(data.get("exp")) is not int or data["exp"] <= time.time() or type(data.get("id")) is not int or data["id"] < 1):
             raise ValueError()
         return data["id"]
-    except (ValueError,KeyError,TypeError,OverflowError):
+    except (ValueError,KeyError,TypeError,OverflowError,IndexError,UnicodeDecodeError,json.JSONDecodeError):
         raise HTTPException(401,"Session expired. Please log in again")
