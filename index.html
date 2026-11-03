@@ -7,7 +7,7 @@
 :root{color-scheme:dark}*{box-sizing:border-box}body{margin:0;background:#080b16;color:#f6f7fb;font:16px system-ui,Arial,sans-serif}main{max-width:740px;margin:auto;padding:24px 16px 60px}header{text-align:center;padding:34px 8px}h1{font-size:clamp(40px,9vw,66px);margin:0;color:#f5c84b;letter-spacing:3px}header p{color:#c7d0e0}.card{background:#161d30;border:1px solid #323c55;border-radius:18px;padding:24px;margin:18px 0;box-shadow:0 10px 35px #0003}h2{margin:0 0 15px;font-size:24px}label{display:block;margin:12px 0 6px}input{width:100%;padding:13px;border:1px solid #63708d;border-radius:10px;background:#0c1222;color:white;font-size:16px}button{background:#f5c84b;color:#10131a;border:0;border-radius:10px;padding:13px 18px;margin-top:17px;font-weight:700;font-size:16px;cursor:pointer;width:100%}button:disabled{opacity:.55;cursor:wait}.status{min-height:1.6em;overflow-wrap:anywhere}.ok{color:#88e6b4}.bad{color:#ff9e9e}.muted{color:#b5bfd1}footer{text-align:center;color:#9faabd;font-size:13px;margin-top:28px}.features{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px}.features div{background:#11182a;border-radius:12px;padding:17px}.features strong{color:#f5c84b}
 textarea{width:100%;min-height:110px;padding:13px;border:1px solid #63708d;border-radius:10px;background:#0c1222;color:white;font:16px system-ui}.mail-item{border-top:1px solid #323c55;padding:12px 0;overflow-wrap:anywhere;white-space:pre-wrap}.mail-item strong{color:#f5c84b}.mail-item small{color:#b5bfd1}#mailPanel[hidden]{display:none}.tabs{display:flex;gap:9px;margin:12px 0 18px}.tabs button{margin:0;flex:1;background:#27334d;color:#fff}.tabs button.active{background:#f5c84b;color:#111}.auth-card[hidden],.mail-view[hidden],#mailPanel[hidden]{display:none}.mail-view{margin-top:12px}.secondary{background:#293650;color:#fff}.tiny{font-size:14px;color:#b5bfd1}.mail-item{background:#0d1425;border-radius:10px;margin:10px 0;padding:15px}.mail-item span{display:block;margin-top:6px}input,textarea{font-size:16px;max-width:100%}textarea{resize:vertical}header{padding:18px 8px}.card{padding:20px;margin:14px 0}button{min-height:49px}</style>
 </head>
-<body><main><header><h1>RKU ONE</h1><p>One World • One Digital Identity</p><p>ਇੱਕ ਦੁਨੀਆ • ਇੱਕ ਡਿਜੀਟਲ ਪਛਾਣ</p></header>
+<body><main><div style="display:flex;align-items:center;justify-content:flex-end;gap:8px;padding-top:8px"><label for="languageSelect" style="margin:0">🌐 Language / ਭਾਸ਼ਾ</label><select id="languageSelect" aria-label="Select language" style="background:#27334d;color:#fff;border:1px solid #63708d;border-radius:10px;padding:10px;font-size:16px"><option value="en">English</option><option value="pa">ਪੰਜਾਬੀ</option></select></div><header><h1>RKU ONE</h1><p>One World • One Digital Identity</p><p>ਇੱਕ ਦੁਨੀਆ • ਇੱਕ ਡਿਜੀਟਲ ਪਛਾਣ</p></header>
 <div class="tabs" id="authTabs"><button type="button" id="showLogin" class="active">🔑 Login / ਲਾਗਇਨ</button><button type="button" id="showRegister">➕ New ID / ਨਵੀਂ ID</button></div><section class="card auth-card" id="registerCard" hidden><h2>Create your RKU ID / ਨਵੀਂ ID ਬਣਾਓ</h2><p class="muted">Every account receives its own unique number.</p>
 <form id="register"><label for="regEmail">Email</label><input id="regEmail" type="email" autocomplete="email" required>
 <label for="regPass">Password (at least 12 characters)</label><input id="regPass" type="password" autocomplete="new-password" minlength="12" required>
@@ -57,4 +57,46 @@ document.getElementById("showLogin").onclick=()=>authTab("login");
 document.getElementById("showRegister").onclick=()=>authTab("register");
 document.getElementById("logoutBtn").onclick=()=>{sessionStorage.removeItem("rkuToken");sessionStorage.removeItem("rkuId");panel.hidden=true;document.getElementById("authTabs").hidden=false;authTab("login");document.getElementById("loginStatus").textContent="Logged out";document.getElementById("loginCard").scrollIntoView({behavior:"smooth"});};
 if(sessionStorage.getItem("rkuToken"))showMail();
+
+const langMap = {
+"🔑 Login / ਲਾਗਇਨ":["🔑 Login","🔑 ਲਾਗਇਨ"],
+"➕ New ID / ਨਵੀਂ ID":["➕ New ID","➕ ਨਵੀਂ ID"],
+"Create your RKU ID / ਨਵੀਂ ID ਬਣਾਓ":["Create your RKU ID","ਆਪਣੀ ਨਵੀਂ RKU ID ਬਣਾਓ"],
+"Every account receives its own unique number.":["Every account receives its own unique number.","ਹਰ ਖਾਤੇ ਨੂੰ ਆਪਣਾ ਵੱਖਰਾ ਨੰਬਰ ਮਿਲਦਾ ਹੈ।"],
+"Email":["Email","ਈਮੇਲ"],
+"Password":["Password","ਪਾਸਵਰਡ"],
+"Password (at least 12 characters)":["Password (at least 12 characters)","ਪਾਸਵਰਡ (ਘੱਟੋ-ਘੱਟ 12 ਅੱਖਰ)"],
+"Create RKU ID":["Create RKU ID","RKU ID ਬਣਾਓ"],
+"Login / ਲਾਗਇਨ":["Login","ਲਾਗਇਨ"],
+"Login":["Login","ਲਾਗਇਨ"],
+"📋 Copy My RKU ID / ਆਪਣੀ ID ਕਾਪੀ ਕਰੋ":["📋 Copy My RKU ID","📋 ਆਪਣੀ ID ਕਾਪੀ ਕਰੋ"],
+"✍️ Write / ਲਿਖੋ":["✍️ Write","✍️ ਲਿਖੋ"],
+"📥 Inbox":["📥 Inbox","📥 ਆਈ ਮੇਲ"],
+"📤 Sent":["📤 Sent","📤 ਭੇਜੀ ਮੇਲ"],
+"To RKU ID / ਕਿਸ ਨੂੰ (ਨੰਬਰ)":["To RKU ID (number)","ਕਿਸ ਨੂੰ (RKU ਨੰਬਰ)"],
+"Subject / ਵਿਸ਼ਾ":["Subject","ਵਿਸ਼ਾ"],
+"Message / ਸੁਨੇਹਾ":["Message","ਸੁਨੇਹਾ"],
+"📨 Send / ਭੇਜੋ":["📨 Send","📨 ਭੇਜੋ"],
+"↻ Refresh / ਤਾਜ਼ਾ ਕਰੋ":["↻ Refresh","↻ ਤਾਜ਼ਾ ਕਰੋ"],
+"🪪 Digital Card / ਡਿਜੀਟਲ ਕਾਰਡ":["🪪 Digital Card","🪪 ਡਿਜੀਟਲ ਕਾਰਡ"],
+"🪪 My Digital Card / ਮੇਰਾ ਕਾਰਡ":["🪪 My Digital Card","🪪 ਮੇਰਾ ਡਿਜੀਟਲ ਕਾਰਡ"],
+"Name / ਨਾਮ":["Name","ਨਾਮ"],
+"Company / ਕੰਪਨੀ":["Company","ਕੰਪਨੀ"],
+"Logo image link (HTTPS) / ਲੋਗੋ ਲਿੰਕ":["Logo image link (HTTPS)","ਲੋਗੋ ਦੀ ਤਸਵੀਰ ਦਾ ਲਿੰਕ (HTTPS)"],
+"Allow others to see my card / ਮੇਰਾ ਕਾਰਡ ਦਿਖਾਉਣ ਦੀ ਇਜਾਜ਼ਤ":["Allow others to see my card","ਦੂਜਿਆਂ ਨੂੰ ਮੇਰਾ ਕਾਰਡ ਦੇਖਣ ਦੀ ਇਜਾਜ਼ਤ"],
+"💾 Save Card / ਸੇਵ ਕਰੋ":["💾 Save Card","💾 ਕਾਰਡ ਸੇਵ ਕਰੋ"],
+"🔎 Find an RKU ID / ID ਲੱਭੋ":["🔎 Find an RKU ID","🔎 RKU ID ਲੱਭੋ"],
+"RKU ID number":["RKU ID number","RKU ID ਨੰਬਰ"],
+"View Card / ਕਾਰਡ ਦੇਖੋ":["View Card","ਕਾਰਡ ਦੇਖੋ"],
+"Logout / ਲਾਗਆਉਟ":["Logout","ਲਾਗਆਉਟ"],
+"Coming later":["Coming later","ਜਲਦੀ ਆ ਰਿਹਾ ਹੈ"],
+"No messages yet":["No messages yet","ਹਾਲੇ ਕੋਈ ਮੇਲ ਨਹੀਂ"]
+};
+const translationNodes=[];
+const textWalker=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT);
+while(textWalker.nextNode()){const node=textWalker.currentNode;const key=node.nodeValue.trim();if(langMap[key])translationNodes.push({node,key});}
+function setLanguage(lang){const choice=lang==="pa"?1:0;document.documentElement.lang=lang;for(const {node,key} of translationNodes)node.nodeValue=langMap[key][choice];document.getElementById("languageSelect").value=lang;try{localStorage.setItem("rkuLanguage",lang);}catch(e){}}
+document.getElementById("languageSelect").addEventListener("change",e=>setLanguage(e.target.value));
+let initialLanguage="en";try{initialLanguage=localStorage.getItem("rkuLanguage")||((navigator.language||"").startsWith("pa")?"pa":"en");}catch(e){}
+setLanguage(initialLanguage);
 </script></body></html>
