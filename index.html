@@ -5,7 +5,7 @@
 <title>RKU ONE | Your Global Digital ID</title>
 <style>
 :root{color-scheme:dark}*{box-sizing:border-box}body{margin:0;background:#080b16;color:#f6f7fb;font:16px system-ui,Arial,sans-serif}main{max-width:740px;margin:auto;padding:24px 16px 60px}header{text-align:center;padding:34px 8px}h1{font-size:clamp(40px,9vw,66px);margin:0;color:#f5c84b;letter-spacing:3px}header p{color:#c7d0e0}.card{background:#161d30;border:1px solid #323c55;border-radius:18px;padding:24px;margin:18px 0;box-shadow:0 10px 35px #0003}h2{margin:0 0 15px;font-size:24px}label{display:block;margin:12px 0 6px}input{width:100%;padding:13px;border:1px solid #63708d;border-radius:10px;background:#0c1222;color:white;font-size:16px}button{background:#f5c84b;color:#10131a;border:0;border-radius:10px;padding:13px 18px;margin-top:17px;font-weight:700;font-size:16px;cursor:pointer;width:100%}button:disabled{opacity:.55;cursor:wait}.status{min-height:1.6em;overflow-wrap:anywhere}.ok{color:#88e6b4}.bad{color:#ff9e9e}.muted{color:#b5bfd1}footer{text-align:center;color:#9faabd;font-size:13px;margin-top:28px}.features{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px}.features div{background:#11182a;border-radius:12px;padding:17px}.features strong{color:#f5c84b}
-</style>
+textarea{width:100%;min-height:110px;padding:13px;border:1px solid #63708d;border-radius:10px;background:#0c1222;color:white;font:16px system-ui}.mail-item{border-top:1px solid #323c55;padding:12px 0;overflow-wrap:anywhere;white-space:pre-wrap}.mail-item strong{color:#f5c84b}.mail-item small{color:#b5bfd1}#mailPanel[hidden]{display:none}</style>
 </head>
 <body><main><header><h1>RKU ONE</h1><p>One World • One Digital Identity</p><p>ਇੱਕ ਦੁਨੀਆ • ਇੱਕ ਡਿਜੀਟਲ ਪਛਾਣ</p></header>
 <section class="card"><h2>Create your RKU ID / ਨਵੀਂ ID ਬਣਾਓ</h2><p class="muted">Every account receives its own unique number.</p>
@@ -16,7 +16,7 @@
 <label for="loginEmail">Email</label><input id="loginEmail" type="email" autocomplete="email" required>
 <label for="loginPass">Password</label><input id="loginPass" type="password" autocomplete="current-password" required>
 <button type="submit">Login</button></form><p id="loginStatus" class="status" role="status" aria-live="polite"></p></section>
-<section class="features"><div><strong>RKU Cloud</strong><p class="muted">Coming later</p></div><div><strong>RKU Chat</strong><p class="muted">Coming later</p></div><div><strong>RKU Calling</strong><p class="muted">Coming later</p></div></section>
+<section class="card" id="mailPanel" hidden><h2>📩 RKU ONE MAIL / ਮੇਲ</h2><p id="myId" class="ok"></p><form id="compose"><label for="mailTo">To RKU ID / ਕਿਸ ਨੂੰ (ਨੰਬਰ)</label><input id="mailTo" type="number" min="1" step="1" required><label for="mailSubject">Subject / ਵਿਸ਼ਾ</label><input id="mailSubject" maxlength="200" required><label for="mailBody">Message / ਸੁਨੇਹਾ</label><textarea id="mailBody" maxlength="10000" required></textarea><button type="submit">Send Mail / ਮੇਲ ਭੇਜੋ</button></form><p id="mailStatus" class="status" role="status"></p><button type="button" id="inboxBtn">📥 Refresh Inbox</button><div id="inboxList" class="muted">Inbox empty</div><button type="button" id="sentBtn">📤 Sent Mail</button><div id="sentList"></div><button type="button" id="logoutBtn">Logout / ਲਾਗਆਉਟ</button></section><section class="features"><div><strong>RKU Cloud</strong><p class="muted">Coming later</p></div><div><strong>RKU Chat</strong><p class="muted">Coming later</p></div><div><strong>RKU Calling</strong><p class="muted">Coming later</p></div></section>
 <footer>© 2026 RKU ONE • Early access test version</footer></main>
 <script>
 const API="https://rku-one-backend.onrender.com";
@@ -31,10 +31,21 @@ async function send(formId,path,statusId,emailId,passId){
   if(!res.ok)throw Error(typeof data.detail==="string"?data.detail:"Request failed");
   status.className="status ok";status.textContent="Success! Your RKU ID: "+data.rku_id;
   document.getElementById(passId).value="";
+  if(path==="/login"){sessionStorage.setItem("rkuToken",data.token);sessionStorage.setItem("rkuId",String(data.rku_id));showMail();}
  }catch(err){status.className="status bad";status.textContent=err.message||"Connection failed. Please retry."}
  finally{button.disabled=false}
  });
 }
 send("register","/register","regStatus","regEmail","regPass");
 send("login","/login","loginStatus","loginEmail","loginPass");
+
+const panel=document.getElementById("mailPanel");
+function showMail(){const id=sessionStorage.getItem("rkuId");panel.hidden=!id;if(id){document.getElementById("myId").textContent="Logged in as RKU ID: "+id;loadFolder("inbox");}}
+async function mailRequest(path,options={}){const res=await fetch(API+path,{...options,headers:{"Authorization":"Bearer "+sessionStorage.getItem("rkuToken"),...(options.headers||{})}});const data=await res.json();if(!res.ok){if(res.status===401){sessionStorage.removeItem("rkuToken");sessionStorage.removeItem("rkuId");panel.hidden=true;}throw Error(data.detail||"Mail request failed");}return data;}
+document.getElementById("compose").addEventListener("submit",async e=>{e.preventDefault();const status=document.getElementById("mailStatus");status.textContent="Sending…";status.className="status";const button=e.target.querySelector("button");button.disabled=true;try{await mailRequest("/mail/send",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({to:Number(document.getElementById("mailTo").value),subject:document.getElementById("mailSubject").value,body:document.getElementById("mailBody").value})});status.className="status ok";status.textContent="Mail sent successfully!";e.target.reset();loadFolder("sent");}catch(err){status.className="status bad";status.textContent=err.message;}finally{button.disabled=false;}});
+async function loadFolder(folder){const target=document.getElementById(folder+"List");target.textContent="Loading…";try{const rows=await mailRequest("/mail/"+folder);target.replaceChildren();if(!rows.length){target.textContent="No messages yet";return;}for(const m of rows){const item=document.createElement("div");item.className="mail-item";const head=document.createElement("strong");head.textContent="From: "+m.from+" → To: "+m.to+" | "+m.subject;const date=document.createElement("small");date.textContent="\n"+new Date(m.date).toLocaleString()+"\n";const body=document.createElement("span");body.textContent=m.body;item.append(head,date,body);target.append(item);}}catch(err){target.textContent=err.message;}}
+document.getElementById("inboxBtn").onclick=()=>loadFolder("inbox");
+document.getElementById("sentBtn").onclick=()=>loadFolder("sent");
+document.getElementById("logoutBtn").onclick=()=>{sessionStorage.removeItem("rkuToken");sessionStorage.removeItem("rkuId");panel.hidden=true;document.getElementById("loginStatus").textContent="Logged out";};
+if(sessionStorage.getItem("rkuToken"))showMail();
 </script></body></html>
