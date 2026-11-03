@@ -1,6 +1,7 @@
 
 from contextlib import asynccontextmanager
 from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, EmailStr
 from registration import register_user, verify_login, setup_database
 
@@ -11,6 +12,12 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(title="RKU ONE API", lifespan=lifespan)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["https://rku-one.onrender.com"],
+    allow_methods=["GET", "POST"],
+    allow_headers=["Content-Type"],
+)
 
 
 class UserData(BaseModel):
