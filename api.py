@@ -9,11 +9,13 @@ from pydantic import BaseModel, EmailStr
 from registration import register_user, verify_login, setup_database
 from mail_store import setup_mail, deliver, mailbox
 from mail_auth import issue_token, authenticated_id
+from profiles import setup_profiles, get_profile, save_profile
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     setup_database()
     setup_mail()
+    setup_profiles()
     yield
 
 
@@ -92,3 +94,29 @@ def inbox(authorization: str | None = Header(default=None)):
 @app.get("/mail/sent")
 def sent(authorization: str | None = Header(default=None)):
     return mailbox(authenticated_id(authorization), True)
+
+class ProfileData(BaseModel):
+    name: str = ""
+    company: str = ""
+    logo_url: str = ""
+    public: bool = False
+
+@app.get("/profile/me")
+def my_profile(authorization: str | None = Header(default=None)):
+    return get_profile(authenticated_id(authorization), True)
+
+@app.post("/profile/me")
+def update_profile(profile: ProfileData, authorization: str | None = Header(default=None)):
+    owner = authenticated_id(authorization)
+    name, company, logo = profile.name.strip(), profile.company.strip(), profile.logo_url.strip()
+    if len(name)>80 or len(company)>120 or len(logo)>500:
+        raise HTTPException(400,"Profile fields are too long")
+    if logo and (not logo.startswith("https://") or any(x in logo for x in ["<",">"," ","\\"])):
+        raise HTTPException(400,"Logo must be an HTTPS image URL")
+    return save_profile(owner,name,company,logo,profile.public)
+
+@app.get("/profile/{rku_id}")
+def public_profile(rku_id: int):
+    if rku_id<1:
+        raise HTTPException(400,"Invalid RKU ID")
+    return get_profile(rku_id)
