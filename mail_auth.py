@@ -1,0 +1,22 @@
+import os, hmac, hashlib, base64, json, time
+from fastapi import HTTPException
+
+def issue_token(rku_id):
+    payload = base64.urlsafe_b64encode(json.dumps({"id":rku_id,"exp":int(time.time())+86400}).encode()).decode().rstrip("=")
+    signature = hmac.new(os.environ["RKU_SESSION_SECRET"].encode(),payload.encode(),hashlib.sha256).hexdigest()
+    return payload+"."+signature
+
+def authenticated_id(authorization):
+    if not authorization or not authorization.startswith("Bearer "):
+        raise HTTPException(401,"Please log in")
+    try:
+        payload, signature = authorization[7:].split(".",1)
+        expected = hmac.new(os.environ["RKU_SESSION_SECRET"].encode(),payload.encode(),hashlib.sha256).hexdigest()
+        if not hmac.compare_digest(signature,expected):
+            raise ValueError()
+        data=json.loads(base64.urlsafe_b64decode(payload+"="*(-len(payload)%4)))
+        if int(data["exp"]) < time.time() or not isinstance(data["id"],int):
+            raise ValueError()
+        return data["id"]
+    except (ValueError,KeyError,TypeError,OverflowError):
+        raise HTTPException(401,"Session expired. Please log in again")
