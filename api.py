@@ -1,5 +1,8 @@
 
+import logging
 from contextlib import asynccontextmanager
+
+from psycopg.errors import UniqueViolation
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, EmailStr
@@ -37,9 +40,10 @@ def register(user: UserData):
         return result
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
+    except UniqueViolation:
+        raise HTTPException(status_code=409, detail="Email already registered. Please log in.")
     
     except Exception:
-        import logging
         logging.exception("Registration failed")
         raise HTTPException(
             status_code=500,
@@ -48,7 +52,11 @@ def register(user: UserData):
 
 @app.post("/login")
 def login(user: UserData):
-    result = verify_login(user.email, user.password)
+    try:
+        result = verify_login(user.email, user.password)
+    except Exception:
+        logging.exception("Login failed")
+        raise HTTPException(status_code=500, detail="Login temporarily unavailable")
 
     if result is None:
         raise HTTPException(
