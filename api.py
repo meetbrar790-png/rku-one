@@ -1,9 +1,16 @@
 
+from contextlib import asynccontextmanager
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel, EmailStr
 from registration import register_user, verify_login, setup_database
 
-app = FastAPI(title="RKU ONE API")
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    setup_database()
+    yield
+
+
+app = FastAPI(title="RKU ONE API", lifespan=lifespan)
 
 
 class UserData(BaseModel):
