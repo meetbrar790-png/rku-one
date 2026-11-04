@@ -40,6 +40,13 @@ def deliver_many(sender, recipients, subject, body):
     if not 1 <= len(recipients) <= 25 or any(type(r) is not int or r < 1 for r in recipients):
         raise ValueError("Enter 1 to 25 valid RKU IDs")
     with get_connection() as conn:
+        # Serialize sends from this RKU ID to avoid parallel requests bypassing limits.
+        conn.execute("SELECT pg_advisory_xact_lock(%s)", (sender,))
+        recent = conn.execute("""SELECT COUNT(*) FILTER (WHERE created_at >= NOW() - INTERVAL '1 minute'),
+                                        COUNT(*) FILTER (WHERE created_at >= NOW() - INTERVAL '1 hour')
+                                 FROM messages WHERE sender=%s AND created_at >= NOW() - INTERVAL '1 hour'""", (sender,)).fetchone()
+        if recent[0] + len(recipients) > 20 or recent[1] + len(recipients) > 100:
+            raise ValueError("Sending limit reached. Please wait before sending more mail.")
         rows = conn.execute("SELECT rku_id FROM users WHERE rku_id = ANY(%s)", (recipients,)).fetchall()
         found = {row[0] for row in rows}
         missing = [r for r in recipients if r not in found]
