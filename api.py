@@ -100,12 +100,16 @@ def send_message(message: MailData, authorization: str | None = Header(default=N
     return {"success": True, "delivered": count}
 
 @app.get("/mail/inbox")
-def inbox(authorization: str | None = Header(default=None)):
-    return mailbox(authenticated_id(authorization))
+def inbox(before: int | None = None, authorization: str | None = Header(default=None)):
+    if before is not None and before < 1:
+        raise HTTPException(400, "Invalid mail cursor")
+    return mailbox(authenticated_id(authorization), before=before)
 
 @app.get("/mail/sent")
-def sent(authorization: str | None = Header(default=None)):
-    return mailbox(authenticated_id(authorization), True)
+def sent(before: int | None = None, authorization: str | None = Header(default=None)):
+    if before is not None and before < 1:
+        raise HTTPException(400, "Invalid mail cursor")
+    return mailbox(authenticated_id(authorization), True, before=before)
 
 class ProfileData(BaseModel):
     name: str = ""
