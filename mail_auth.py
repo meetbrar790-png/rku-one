@@ -1,4 +1,4 @@
-import os, hmac, hashlib, base64, json, time
+import os, hmac, hashlib, base64, binascii, json, time
 from fastapi import HTTPException
 
 def issue_token(rku_id):
@@ -20,5 +20,5 @@ def authenticated_id(authorization):
         if (type(data.get("exp")) is not int or data["exp"] <= time.time() or type(data.get("id")) is not int or data["id"] < 1):
             raise ValueError()
         return data["id"]
-    except (ValueError,KeyError,TypeError,OverflowError,IndexError,UnicodeDecodeError,json.JSONDecodeError):
+    except (ValueError,KeyError,TypeError,OverflowError,IndexError,UnicodeDecodeError,binascii.Error,json.JSONDecodeError):
         raise HTTPException(401,"Session expired. Please log in again")
