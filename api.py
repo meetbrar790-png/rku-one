@@ -28,6 +28,15 @@ app.add_middleware(
 )
 
 
+@app.middleware("http")
+async def security_headers(request, call_next):
+    response = await call_next(request)
+    response.headers["X-Content-Type-Options"] = "nosniff"
+    response.headers["Referrer-Policy"] = "no-referrer"
+    response.headers["Cache-Control"] = "no-store"
+    return response
+
+
 class MailData(BaseModel):
     to: int | list[int]
     subject: str
