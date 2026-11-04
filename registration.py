@@ -26,25 +26,8 @@ def setup_database():
             blocked_until TIMESTAMPTZ
         )""")
         conn.execute("DELETE FROM login_failures WHERE blocked_until IS NULL AND first_failure < NOW() - INTERVAL '1 day'")
-        # Preserve every previously issued ID. Only change the sequence if
-        # it has never been used and no accounts exist.
-        conn.execute("LOCK TABLE users IN ACCESS EXCLUSIVE MODE")
-        sequence_name = conn.execute(
-            "SELECT pg_get_serial_sequence('users', 'rku_id')"
-        ).fetchone()[0]
-        if sequence_name:
-            from psycopg import sql
-            seq = sql.Identifier(*sequence_name.split("."))
-            sequence_state = conn.execute(
-                sql.SQL("SELECT last_value, is_called FROM {}").format(seq)
-            ).fetchone()
-            has_users = conn.execute(
-                "SELECT EXISTS (SELECT 1 FROM users)"
-            ).fetchone()[0]
-            if not has_users and not sequence_state[1]:
-                conn.execute(
-                    "ALTER TABLE users ALTER COLUMN rku_id RESTART WITH 1"
-                )
+        # Preserve issued IDs without an exclusive table lock at startup.
+        # A fresh identity sequence already starts at 1 by schema definition.
 
 def register_user(email, password):
     if not isinstance(email, str) or not isinstance(password, str):
