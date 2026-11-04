@@ -19,6 +19,12 @@ def setup_database():
                 created_at TIMESTAMPTZ DEFAULT NOW()
             )
         """)
+        conn.execute("""CREATE TABLE IF NOT EXISTS login_failures (
+            email TEXT PRIMARY KEY,
+            failures INTEGER NOT NULL DEFAULT 0,
+            first_failure TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+            blocked_until TIMESTAMPTZ
+        )""")
         # Preserve every previously issued ID. Only change the sequence if
         # it has never been used and no accounts exist.
         conn.execute("LOCK TABLE users IN ACCESS EXCLUSIVE MODE")
@@ -62,16 +68,36 @@ def register_user(email, password):
 def verify_login(email, password):
     if not isinstance(password, str) or len(password) > 256 or len(email) > 254:
         return None
+    normalized_email = email.strip().lower()
     with get_connection() as conn:
-        user = conn.execute(
-            """
-            SELECT rku_id, password_hash
-            FROM users WHERE email = %s
-            """,
-            (email.strip().lower(),)
+        # Serialize login checks for each email across server workers.
+        conn.execute("SELECT pg_advisory_xact_lock(hashtextextended(%s, 0))", (normalized_email,))
+        state = conn.execute(
+            "SELECT failures, blocked_until > NOW() FROM login_failures WHERE email=%s",
+            (normalized_email,)
         ).fetchone()
-
-    if user and password_hash.verify(password, user[1]):
-        return {"rku_id": user[0]}
-
+        if state and state[1]:
+            return None
+        user = conn.execute(
+            "SELECT rku_id, password_hash FROM users WHERE email=%s",
+            (normalized_email,)
+        ).fetchone()
+        if user and password_hash.verify(password, user[1]):
+            conn.execute("DELETE FROM login_failures WHERE email=%s", (normalized_email,))
+            return {"rku_id": user[0]}
+        conn.execute("""
+            INSERT INTO login_failures(email, failures, first_failure, blocked_until)
+            VALUES (%s, 1, NOW(), NULL)
+            ON CONFLICT (email) DO UPDATE SET
+                failures = CASE
+                    WHEN login_failures.first_failure < NOW() - INTERVAL '15 minutes' THEN 1
+                    ELSE login_failures.failures + 1 END,
+                first_failure = CASE
+                    WHEN login_failures.first_failure < NOW() - INTERVAL '15 minutes' THEN NOW()
+                    ELSE login_failures.first_failure END,
+                blocked_until = CASE
+                    WHEN login_failures.first_failure < NOW() - INTERVAL '15 minutes' THEN NULL
+                    WHEN login_failures.failures + 1 >= 5 THEN NOW() + INTERVAL '15 minutes'
+                    ELSE NULL END
+        """, (normalized_email,))
     return None
