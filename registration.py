@@ -19,13 +19,13 @@ def setup_database():
                 created_at TIMESTAMPTZ DEFAULT NOW()
             )
         """)
-        conn.execute("DELETE FROM login_failures WHERE blocked_until IS NULL AND first_failure < NOW() - INTERVAL '1 day'")
         conn.execute("""CREATE TABLE IF NOT EXISTS login_failures (
             email TEXT PRIMARY KEY,
             failures INTEGER NOT NULL DEFAULT 0,
             first_failure TIMESTAMPTZ NOT NULL DEFAULT NOW(),
             blocked_until TIMESTAMPTZ
         )""")
+        conn.execute("DELETE FROM login_failures WHERE blocked_until IS NULL AND first_failure < NOW() - INTERVAL '1 day'")
         # Preserve every previously issued ID. Only change the sequence if
         # it has never been used and no accounts exist.
         conn.execute("LOCK TABLE users IN ACCESS EXCLUSIVE MODE")
