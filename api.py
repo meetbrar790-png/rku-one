@@ -14,10 +14,15 @@ from contacts import setup_contacts, list_contacts, save_contact, delete_contact
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    logging.warning("RKU ONE startup: initializing account tables")
     setup_database()
+    logging.warning("RKU ONE startup: initializing mail tables")
     setup_mail()
+    logging.warning("RKU ONE startup: initializing profile tables")
     setup_profiles()
+    logging.warning("RKU ONE startup: initializing contacts tables")
     setup_contacts()
+    logging.warning("RKU ONE startup: database initialization complete")
     yield
 
 
