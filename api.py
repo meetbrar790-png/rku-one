@@ -10,12 +10,14 @@ from registration import register_user, verify_login, setup_database
 from mail_store import setup_mail, deliver, deliver_many, mailbox
 from mail_auth import issue_token, authenticated_id
 from profiles import setup_profiles, get_profile, save_profile
+from contacts import setup_contacts, list_contacts, save_contact, delete_contact
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     setup_database()
     setup_mail()
     setup_profiles()
+    setup_contacts()
     yield
 
 
@@ -138,3 +140,30 @@ def public_profile(rku_id: int):
     if rku_id<1:
         raise HTTPException(400,"Invalid RKU ID")
     return get_profile(rku_id)
+
+
+class ContactData(BaseModel):
+    rku_id: int
+    nickname: str = ""
+
+
+@app.get("/contacts")
+def contacts_list(authorization: str | None = Header(default=None)):
+    return list_contacts(authenticated_id(authorization))
+
+
+@app.post("/contacts")
+def contacts_save(contact: ContactData, authorization: str | None = Header(default=None)):
+    owner = authenticated_id(authorization)
+    try:
+        return save_contact(owner, contact.rku_id, contact.nickname)
+    except ValueError as exc:
+        raise HTTPException(400, str(exc))
+
+
+@app.post("/contacts/remove")
+def contacts_remove(contact: ContactData, authorization: str | None = Header(default=None)):
+    owner = authenticated_id(authorization)
+    if contact.rku_id < 1:
+        raise HTTPException(400, "Invalid RKU ID")
+    return delete_contact(owner, contact.rku_id)
