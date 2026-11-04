@@ -33,7 +33,7 @@ class ContactsTests(unittest.TestCase):
         from unittest.mock import MagicMock
         connection = MagicMock()
         cursor = connection.execute.return_value
-        cursor.fetchone.side_effect = [(1,), None, None, (500,)]
+        cursor.fetchone.side_effect = [(1,), None, (500,)]
         manager = MagicMock()
         manager.return_value.__enter__.return_value = connection
         with patch("contacts.get_connection", manager):
