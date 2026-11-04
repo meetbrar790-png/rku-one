@@ -42,8 +42,8 @@ def setup_database():
 def register_user(email, password):
     email = email.strip().lower()
 
-    if not email or len(password) < 12:
-        raise ValueError("Valid email and 12-character password required")
+    if not email or len(email) > 254 or not 12 <= len(password) <= 256:
+        raise ValueError("Valid email and password of 12 to 256 characters required")
 
     hashed = password_hash.hash(password)
 
@@ -60,6 +60,8 @@ def register_user(email, password):
     return {"rku_id": result[0], "email": email}
 
 def verify_login(email, password):
+    if not isinstance(password, str) or len(password) > 256 or len(email) > 254:
+        return None
     with get_connection() as conn:
         user = conn.execute(
             """
