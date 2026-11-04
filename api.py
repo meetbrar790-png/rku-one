@@ -96,6 +96,8 @@ def send_message(message: MailData, authorization: str | None = Header(default=N
         recipients = message.to if isinstance(message.to, list) else [message.to]
         count = deliver_many(sender, recipients, message.subject.strip(), message.body.strip())
     except ValueError as exc:
+        if str(exc).startswith("Sending limit reached"):
+            raise HTTPException(status_code=429, detail=str(exc), headers={"Retry-After": "60"})
         raise HTTPException(400, str(exc))
     return {"success": True, "delivered": count}
 
