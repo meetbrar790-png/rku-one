@@ -19,6 +19,7 @@ def setup_database():
                 created_at TIMESTAMPTZ DEFAULT NOW()
             )
         """)
+        conn.execute("DELETE FROM login_failures WHERE blocked_until IS NULL AND first_failure < NOW() - INTERVAL '1 day'")
         conn.execute("""CREATE TABLE IF NOT EXISTS login_failures (
             email TEXT PRIMARY KEY,
             failures INTEGER NOT NULL DEFAULT 0,
