@@ -75,6 +75,16 @@ class SessionTokenTests(unittest.TestCase):
                     authenticated_id("Bearer " + token)
             self.assertEqual(error.exception.status_code, 401)
 
+    def test_malformed_base64_payload_rejected(self):
+        with patch.dict("os.environ", {"RKU_SESSION_SECRET": "test-only-secret"}):
+            import hmac
+            import hashlib
+            payload = "!!!invalid_base64!!!"
+            signature = hmac.new(b"test-only-secret", payload.encode(), hashlib.sha256).hexdigest()
+            with self.assertRaises(HTTPException) as error:
+                authenticated_id("Bearer " + payload + "." + signature)
+            self.assertEqual(error.exception.status_code, 401)
+
     def test_oversized_bearer_token_rejected(self):
         with self.assertRaises(HTTPException) as error:
             authenticated_id("Bearer " + "a" * 5000)
