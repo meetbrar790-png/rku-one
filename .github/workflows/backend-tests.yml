@@ -32,8 +32,15 @@ jobs:
           echo '## RKU ONE test failure details' >> "$GITHUB_STEP_SUMMARY"
           echo 'Open the failed job for the full traceback.' >> "$GITHUB_STEP_SUMMARY"
           echo '```text' >> "$GITHUB_STEP_SUMMARY"
-          tail -n 100 unit-test-output.txt >> "$GITHUB_STEP_SUMMARY"
+          if [ -f unit-test-output.txt ]; then
+            tail -n 150 unit-test-output.txt >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo 'No unit test log was produced; inspect installation and checkout steps.' >> "$GITHUB_STEP_SUMMARY"
+          fi
           echo '```' >> "$GITHUB_STEP_SUMMARY"
+          if [ -f unit-test-output.txt ]; then
+            echo '::error title=RKU ONE tests failed::See the job summary and rku-one-unit-test-output artifact for the Python traceback.'
+          fi
       - name: Upload test output
         if: always()
         uses: actions/upload-artifact@v4
