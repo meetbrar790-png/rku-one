@@ -10,6 +10,8 @@ def setup_mail():
             body TEXT NOT NULL,
             created_at TIMESTAMPTZ DEFAULT NOW()
         )""")
+        conn.execute("CREATE INDEX IF NOT EXISTS idx_messages_recipient_id ON messages(recipient, id DESC)")
+        conn.execute("CREATE INDEX IF NOT EXISTS idx_messages_sender_id ON messages(sender, id DESC)")
 
 def deliver(sender, recipient, subject, body):
     with get_connection() as conn:
