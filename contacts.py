@@ -23,7 +23,7 @@ def list_contacts(owner):
 
 
 def save_contact(owner, contact_id, nickname):
-    if type(contact_id) is not int or contact_id < 1 or contact_id == owner:
+    if type(contact_id) is not int or contact_id < 1 or contact_id > 9223372036854775807 or contact_id == owner:
         raise ValueError("Enter another valid RKU ID")
     if not isinstance(nickname, str) or len(nickname) > 80:
         raise ValueError("Contact name must be 80 characters or fewer")
@@ -31,6 +31,13 @@ def save_contact(owner, contact_id, nickname):
         exists = conn.execute("SELECT 1 FROM users WHERE rku_id=%s", (contact_id,)).fetchone()
         if not exists:
             raise ValueError("RKU ID not found")
+        # Serialize additions per owner so the per-account cap is enforced even under concurrent requests.
+        conn.execute("SELECT pg_advisory_xact_lock(%s)", (owner,))
+        existing = conn.execute("SELECT 1 FROM contacts WHERE owner=%s AND contact_id=%s", (owner, contact_id)).fetchone()
+        if not existing:
+            total = conn.execute("SELECT COUNT(*) FROM contacts WHERE owner=%s", (owner,)).fetchone()[0]
+            if total >= 500:
+                raise ValueError("Contact limit reached (500)")
         conn.execute("""INSERT INTO contacts(owner,contact_id,nickname) VALUES(%s,%s,%s)
             ON CONFLICT(owner,contact_id) DO UPDATE SET nickname=EXCLUDED.nickname""",
             (owner, contact_id, nickname.strip()))
