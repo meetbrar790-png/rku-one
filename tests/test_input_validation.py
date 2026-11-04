@@ -75,6 +75,11 @@ class SessionTokenTests(unittest.TestCase):
                     authenticated_id("Bearer " + token)
             self.assertEqual(error.exception.status_code, 401)
 
+    def test_oversized_bearer_token_rejected(self):
+        with self.assertRaises(HTTPException) as error:
+            authenticated_id("Bearer " + "a" * 5000)
+        self.assertEqual(error.exception.status_code, 401)
+
     def test_missing_bearer_token_rejected(self):
         with self.assertRaises(HTTPException) as error:
             authenticated_id(None)
