@@ -25,6 +25,16 @@ class RegistrationInputTests(unittest.TestCase):
                 register_user("user@example.com", "x" * 257)
             connect.assert_not_called()
 
+    def test_empty_login_email_rejected_without_database(self):
+        with patch("registration.get_connection") as connect:
+            self.assertIsNone(verify_login("   ", "a" * 12))
+            connect.assert_not_called()
+
+    def test_invalid_login_email_type_rejected_without_database(self):
+        with patch("registration.get_connection") as connect:
+            self.assertIsNone(verify_login(None, "a" * 12))
+            connect.assert_not_called()
+
     def test_oversized_login_rejected_without_database(self):
         with patch("registration.get_connection") as connect:
             self.assertIsNone(verify_login("user@example.com", "x" * 257))
