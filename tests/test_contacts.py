@@ -29,6 +29,17 @@ class ContactsTests(unittest.TestCase):
                 save_contact(1, True, "Bad ID")
             db.assert_not_called()
 
+    def test_contact_limit_blocks_new_entry(self):
+        from unittest.mock import MagicMock
+        connection = MagicMock()
+        cursor = connection.execute.return_value
+        cursor.fetchone.side_effect = [(1,), None, (500,)]
+        manager = MagicMock()
+        manager.return_value.__enter__.return_value = connection
+        with patch("contacts.get_connection", manager):
+            with self.assertRaisesRegex(ValueError, "Contact limit reached"):
+                save_contact(1, 2, "Friend")
+
     def test_long_nickname(self):
         with patch("contacts.get_connection") as db:
             with self.assertRaises(ValueError):
