@@ -67,9 +67,11 @@ def register_user(email, password):
     return {"rku_id": result[0], "email": email}
 
 def verify_login(email, password):
-    if not isinstance(password, str) or len(password) > 256 or len(email) > 254:
+    if not isinstance(email, str) or not isinstance(password, str) or len(password) > 256 or len(email) > 254:
         return None
     normalized_email = email.strip().lower()
+    if not normalized_email:
+        return None
     with get_connection() as conn:
         # Serialize login checks for each email across server workers.
         conn.execute("SELECT pg_advisory_xact_lock(hashtextextended(%s, 0))", (normalized_email,))
