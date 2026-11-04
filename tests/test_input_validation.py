@@ -13,6 +13,18 @@ from mail_store import deliver_many, mailbox
 
 
 class RegistrationInputTests(unittest.TestCase):
+    def test_invalid_registration_email_type_rejected_without_database(self):
+        with patch("registration.get_connection") as connect:
+            with self.assertRaises(ValueError):
+                register_user(None, "a" * 12)
+            connect.assert_not_called()
+
+    def test_invalid_registration_password_type_rejected_without_database(self):
+        with patch("registration.get_connection") as connect:
+            with self.assertRaises(ValueError):
+                register_user("user@example.com", None)
+            connect.assert_not_called()
+
     def test_short_password_rejected_without_database(self):
         with patch("registration.get_connection") as connect:
             with self.assertRaises(ValueError):
