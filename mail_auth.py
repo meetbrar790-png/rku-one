@@ -9,6 +9,8 @@ def issue_token(rku_id):
 def authenticated_id(authorization):
     if not authorization or not authorization.startswith("Bearer "):
         raise HTTPException(401,"Please log in")
+    if len(authorization) > 4096:
+        raise HTTPException(401,"Invalid session token")
     try:
         payload, signature = authorization[7:].split(".",1)
         expected = hmac.new(os.environ["RKU_SESSION_SECRET"].encode(),payload.encode(),hashlib.sha256).hexdigest()
