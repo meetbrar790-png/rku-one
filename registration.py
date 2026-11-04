@@ -47,6 +47,8 @@ def setup_database():
                 )
 
 def register_user(email, password):
+    if not isinstance(email, str) or not isinstance(password, str):
+        raise ValueError("Valid email and password of 12 to 256 characters required")
     email = email.strip().lower()
 
     if not email or len(email) > 254 or not 12 <= len(password) <= 256:
