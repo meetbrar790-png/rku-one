@@ -21,10 +21,18 @@ def deliver(sender, recipient, subject, body):
         conn.execute("INSERT INTO messages(sender,recipient,subject,body) VALUES (%s,%s,%s,%s)",
                      (sender,recipient,subject,body))
 
-def mailbox(owner, sent=False):
+def mailbox(owner, sent=False, before=None):
     field = "sender" if sent else "recipient"
+    if before is not None and (type(before) is not int or before < 1):
+        raise ValueError("Invalid mail cursor")
+    query = "SELECT id,sender,recipient,subject,body,created_at FROM messages WHERE "+field+"=%s"
+    params = [owner]
+    if before is not None:
+        query += " AND id < %s"
+        params.append(before)
+    query += " ORDER BY id DESC LIMIT 50"
     with get_connection() as conn:
-        rows = conn.execute("SELECT id,sender,recipient,subject,body,created_at FROM messages WHERE "+field+"=%s ORDER BY id DESC LIMIT 50", (owner,)).fetchall()
+        rows = conn.execute(query, tuple(params)).fetchall()
     return [{"id":r[0],"from":r[1],"to":r[2],"subject":r[3],"body":r[4],"date":r[5].isoformat()} for r in rows]
 
 def deliver_many(sender, recipients, subject, body):
