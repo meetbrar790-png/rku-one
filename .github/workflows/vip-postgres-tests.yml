@@ -36,12 +36,12 @@ jobs:
         run: python -m pip install "psycopg[binary]>=3,<4"
       - name: Install API staging test dependencies
         run: python -m pip install -r requirements.txt
-      - name: Test real registration API handler in isolated schema
-        run: python -m unittest discover -s tests -p 'test_actual_registration_api_staging.py' -v
       - name: Verify disposable database URL before integration tests
         run: python -c 'import os; from staging_db_preflight import assert_disposable_staging_url; assert_disposable_staging_url(os.environ["RKU_VIP_TEST_DATABASE_URL"])'
       - name: Verify actual disposable PostgreSQL connection
         run: python staging_db_connection_check.py
+      - name: Test real registration API handler in isolated schema
+        run: python -m unittest discover -s tests -p 'test_actual_registration_api_staging.py' -v
       - name: Run isolated PostgreSQL integration tests
         run: python -m unittest discover -s tests -p 'test_vip_*prototype.py' -v
       - name: Run transactional allocator concurrency tests
