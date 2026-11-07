@@ -33,14 +33,16 @@ class VipHoldTransactionTests(unittest.TestCase):
             ).format(sql.Identifier(table)))
         try:
             with psycopg.connect(url) as conn:
-                conn.executemany(
-                    sql.SQL("INSERT INTO {} VALUES (%s,%s,%s,%s,%s)").format(sql.Identifier(table)),
-                    [(2, "reserved", False, False, now - timedelta(minutes=1)),
-                     (3, "reserved", True, False, now - timedelta(minutes=1)),
-                     (4, "reserved", False, True, now - timedelta(minutes=1)),
-                     (5, "reserved", False, False, now + timedelta(hours=1)),
-                     (6, "allocated", False, False, now - timedelta(minutes=1))],
-                )
+                for item in [
+                    (2, "reserved", False, False, now - timedelta(minutes=1)),
+                    (3, "reserved", True, False, now - timedelta(minutes=1)),
+                    (4, "reserved", False, True, now - timedelta(minutes=1)),
+                    (5, "reserved", False, False, now + timedelta(hours=1)),
+                    (6, "allocated", False, False, now - timedelta(minutes=1)),
+                ]:
+                    conn.execute(sql.SQL(
+                        "INSERT INTO {} VALUES (%s,%s,%s,%s,%s)"
+                    ).format(sql.Identifier(table)), item)
             with psycopg.connect(url) as conn:
                 rows = conn.execute(sql.SQL(
                     "SELECT rku_id,state,paid,issued,expires_at FROM {} FOR UPDATE"
