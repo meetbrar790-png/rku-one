@@ -16,9 +16,18 @@ def allocate_free_id(conn, users_table: str, reservations_table: str, sequence_n
     Production implementation needs a reviewed migration, authorization,
     audit logging, reservation expiry policy and concurrency tests.
     """
-    if not all(isinstance(v, str) and v.startswith("rku_") for v in
-               (users_table, reservations_table, sequence_name)):
-        raise ValueError("Only isolated rku_ test objects supported")
+    import re
+    expected = (
+        (users_table, r"rku_users_[0-9a-f]{32}"),
+        (reservations_table, r"rku_reserved_[0-9a-f]{32}"),
+        (sequence_name, r"rku_seq_[0-9a-f]{32}"),
+    )
+    if any(not isinstance(value, str) or re.fullmatch(pattern, value) is None
+           for value, pattern in expected):
+        raise ValueError("Only randomly named disposable VIP test objects supported")
+    suffixes = [value.rsplit("_", 1)[-1] for value, _ in expected]
+    if len(set(suffixes)) != 1:
+        raise ValueError("VIP test objects must share the same random suffix")
     if not isinstance(max_attempts, int) or isinstance(max_attempts, bool) or not 1 <= max_attempts <= 10000:
         raise ValueError("Invalid max_attempts")
     conn.execute("SELECT pg_advisory_xact_lock(%s)", (ALLOCATION_LOCK_KEY,))
