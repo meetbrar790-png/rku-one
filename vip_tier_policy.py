@@ -2,9 +2,13 @@
 
 Owner proposal: ID 1 founder-held; 2-10 VVIP; 11-100 VIP Gold;
 101-1000 VIP Silver; 1001+ normal/free.
-The exact price of each premium ID is not yet decided.
+Premium prices are denominated in USD. Exact amounts are not yet decided.
 Previously issued IDs remain issued and cannot be sold again.
 """
+
+
+VIP_PRICE_CURRENCY = "USD"
+FREE_ID_START = 1001
 
 
 def vip_tier(rku_id: int) -> str:
