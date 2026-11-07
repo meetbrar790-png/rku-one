@@ -42,6 +42,8 @@ jobs:
         run: python -m unittest discover -s tests -p 'test_vip_cross_path_lock.py' -v
       - name: Run allocator rollback tests
         run: python -m unittest discover -s tests -p 'test_vip_allocator_rollback.py' -v
+      - name: Run VIP payment PostgreSQL test
+        run: python -m unittest discover -s tests -p 'test_vip_payment_postgres.py' -v
       - name: Run duplicate email VIP PostgreSQL test
         run: python -m unittest discover -s tests -p 'test_vip_duplicate_email_postgres.py' -v
       - name: Run concurrent full registration VIP PostgreSQL test
