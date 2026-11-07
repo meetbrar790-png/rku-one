@@ -46,6 +46,8 @@ jobs:
         run: python -m unittest discover -s tests -p 'test_staging_vip_api_concurrent.py' -v
       - name: Rehearse VIP-aware registration via real API handler
         run: python -m unittest discover -s tests -p 'test_staging_vip_api_integration.py' -v
+      - name: Test VIP-aware HTTP registration rollback
+        run: python -m unittest discover -s tests -p 'test_staging_vip_http_rollback.py' -v
       - name: Test concurrent duplicate-email HTTP signups
         run: python -m unittest discover -s tests -p 'test_staging_vip_http_duplicate_race.py' -v
       - name: Test concurrent HTTP VIP-aware registrations
