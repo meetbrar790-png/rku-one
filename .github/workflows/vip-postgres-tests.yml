@@ -52,6 +52,8 @@ jobs:
         run: python -m unittest discover -s tests -p 'test_vip_duplicate_email_postgres.py' -v
       - name: Run concurrent full registration VIP PostgreSQL test
         run: python -m unittest discover -s tests -p 'test_vip_concurrent_full_registration.py' -v
+      - name: Run staging duplicate email and VIP hold regression
+        run: python -m unittest discover -s tests -p 'test_vip_staging_duplicate_email.py' -v
       - name: Run VIP reservation and registration integration tests
         run: python -m unittest discover -s tests -p 'test_vip_reservation_registration_service.py' -v
       - name: Run full registration service concurrency and rollback tests
