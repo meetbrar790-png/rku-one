@@ -34,6 +34,8 @@ jobs:
           python-version: '3.12'
       - name: Install PostgreSQL client dependency
         run: python -m pip install "psycopg[binary]>=3,<4"
+      - name: Verify disposable database URL before integration tests
+        run: python -c 'import os; from staging_db_preflight import assert_disposable_staging_url; assert_disposable_staging_url(os.environ["RKU_VIP_TEST_DATABASE_URL"])'
       - name: Run isolated PostgreSQL integration tests
         run: python -m unittest discover -s tests -p 'test_vip_*prototype.py' -v
       - name: Run transactional allocator concurrency tests
