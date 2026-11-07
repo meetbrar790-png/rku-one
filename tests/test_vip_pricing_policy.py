@@ -15,9 +15,9 @@ class VipPricingPolicyTests(unittest.TestCase):
 
     def test_special_and_boundaries(self):
         expected = {1: None, 11: None, 12: 499, 13: 4999,
-                    14: 499, 99: 499, 100: 999, 101: 99,
-                    785: 99, 786: 3999, 787: 99, 999: 99,
-                    1000: 499, 1001: 0, 1000000: 0}
+                    14: 499, 99: 499, 100: 1499, 101: 199,
+                    785: 199, 786: 4999, 787: 199, 999: 199,
+                    1000: 999, 1001: 0, 1000000: 0}
         for number, price in expected.items():
             with self.subTest(number=number):
                 self.assertEqual(proposed_price_usd(number), price)
@@ -28,7 +28,7 @@ class VipPricingPolicyTests(unittest.TestCase):
         self.assertIsNone(sale_quote_usd(2, {2}, set()))
         self.assertIsNone(sale_quote_usd(13, set(), {13}))
         self.assertIsNone(sale_quote_usd(1001, set(), set()))
-        self.assertEqual(sale_quote_usd(786, set(), set()), 3999)
+        self.assertEqual(sale_quote_usd(786, set(), set()), 4999)
 
 
 if __name__ == "__main__":
