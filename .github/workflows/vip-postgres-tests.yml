@@ -35,4 +35,6 @@ jobs:
       - name: Install PostgreSQL client dependency
         run: python -m pip install "psycopg[binary]>=3,<4"
       - name: Run isolated PostgreSQL integration tests
+        run: python -m unittest discover -s tests -p 'test_vip_*prototype.py' -v
+      - name: Run VIP PostgreSQL reservation tests
         run: python -m unittest discover -s tests -p 'test_vip_postgres_integration.py' -v
