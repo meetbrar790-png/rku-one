@@ -16,6 +16,9 @@ def allocate_free_id(conn, users_table: str, reservations_table: str, sequence_n
     Production implementation needs a reviewed migration, authorization,
     audit logging, reservation expiry policy and concurrency tests.
     """
+    dbname = getattr(getattr(conn, "info", None), "dbname", None)
+    if not isinstance(dbname, str) or not dbname.endswith("_vip_test"):
+        raise ValueError("Prototype allocator requires disposable *_vip_test database")
     import re
     expected = (
         (users_table, r"rku_users_[0-9a-f]{32}"),
