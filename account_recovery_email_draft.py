@@ -23,8 +23,7 @@ def build_reset_email(*, recipient_email: str, token: str, app_origin: str) -> d
     if (parts.scheme != "https" or not parts.hostname or parts.username or parts.password
             or parts.path not in ("", "/") or parts.query or parts.fragment):
         raise ValueError("Only a trusted HTTPS origin is permitted")
-    # The origin MUST be supplied from server-side trusted configuration,
-    # never from a Host header or untrusted user input.
+    # Fail closed to the explicitly approved production website. Staging\n    # needs a separate reviewed allowlist and must not send real emails.\n    if parts.hostname != "rkuone.com" or parts.port is not None:\n        raise ValueError("Unapproved password reset website")\n    # Never derive this origin from a Host header or untrusted user input.
     origin = app_origin.rstrip("/")
     link = origin + "/reset-password?token=" + quote(token, safe="")
     return {
