@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>RKU ONE — VIP Number Preview</title>
+<style>
+:root{color-scheme:dark;font-family:system-ui,-apple-system,Segoe UI,sans-serif;background:#090c16;color:#f6f7fb}
+*{box-sizing:border-box}body{margin:0}main{max-width:920px;margin:auto;padding:40px 20px 80px}
+header{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap}
+.logo{font-size:24px;font-weight:900;letter-spacing:.08em}.logo span{color:#f6c65b}
+.pill{border:1px solid #6b5431;color:#f8d58a;border-radius:99px;padding:7px 13px;font-size:12px}
+h1{font-size:clamp(32px,6vw,56px);line-height:1.1;margin:55px 0 14px}
+.lead{color:#bac3d5;line-height:1.65;max-width:680px}
+.panel{background:#151a29;border:1px solid #2e364a;border-radius:20px;padding:22px;margin-top:28px}
+label{display:block;font-size:14px;margin-bottom:9px;color:#d8dfed}
+input{background:#0b1020;color:white;border:1px solid #586179;border-radius:10px;font:inherit;font-size:22px;padding:13px;width:100%;max-width:330px}
+input:focus{outline:2px solid #e4b758;outline-offset:2px}
+.result{margin-top:20px;display:grid;grid-template-columns:1fr auto;align-items:center;gap:12px}
+.price{font-size:30px;font-weight:800;color:#f6c65b}.muted{color:#aeb9cb;font-size:13px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-top:20px}
+.tile{background:#171e2f;border:1px solid #343d52;border-radius:14px;padding:16px}
+.tile strong{display:block;font-size:22px;margin-bottom:7px}
+.tile small{color:#c6d0df}.notice{margin-top:22px;padding:16px;border-left:3px solid #e4b758;background:#242016;color:#f8e6bd;line-height:1.6}
+footer{color:#9ba8be;margin-top:32px;font-size:13px}
+@media(max-width:480px){.result{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<main>
+<header><div class="logo">RKU <span>ONE</span></div><span class="pill">DEMO ONLY · SALES DISABLED</span></header>
+<h1>Choose your RKU ID</h1>
+<p class="lead">Explore proposed USD list prices for unique numeric IDs. This preview does not check live availability, reserve a number, or accept payments.</p>
+<section class="panel" aria-label="Number price preview">
+<label for="number">Enter a numeric RKU ID (1 or higher)</label>
+<input id="number" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="18" value="786" autocomplete="off">
+<div class="result" aria-live="polite"><div><div id="tier">Special VVIP</div><div id="status" class="muted">Live availability not verified</div></div><div id="price" class="price">$4,999</div></div>
+</section>
+<section aria-label="Featured examples"><h2>Featured number examples</h2><div class="grid">
+<div class="tile"><strong>#2</strong><small>VVIP · $9,999</small></div>
+<div class="tile"><strong>#7</strong><small>VVIP · $7,777</small></div>
+<div class="tile"><strong>#13</strong><small>Special VVIP · $4,999</small></div>
+<div class="tile"><strong>#786</strong><small>Special VVIP · $4,999</small></div>
+<div class="tile"><strong>#100</strong><small>VIP Gold · $1,499</small></div>
+<div class="tile"><strong>#1000</strong><small>VIP Silver · $999</small></div>
+</div></section>
+<div class="notice">ID 1 is founder-held and ID 11 is designated for RKU Film Production; neither is for sale. IDs 1001 and above are free under the proposed policy. All prices are proposed one-time USD list prices, not offers to sell. Existing issued IDs cannot be sold again.</div>
+<footer>RKU ONE · Preview only · No payment, checkout, account creation, or reservation.</footer>
+</main>
+<script>
+(function(){
+'use strict';
+const input=document.getElementById('number'),tier=document.getElementById('tier'),price=document.getElementById('price'),status=document.getElementById('status');
+const specials={2:9999,3:7999,4:5999,5:4999,6:3999,7:7777,8:6999,9:4999,10:5999,13:4999,786:4999,100:1499,1000:999};
+function update(){
+ const raw=input.value.trim();
+ if(!/^[1-9][0-9]*$/.test(raw)||raw.length>15){
+  tier.textContent='Enter a valid positive numeric ID';price.textContent='—';status.textContent='No reservation or availability check';return;
+ }
+ const n=Number(raw);
+ let label,amount;
+ if(n===1){label='Founder ID · Not for sale';amount=null;}
+ else if(n===11){label='Company Reserved · Not for sale';amount=null;}
+ else if(n===13||n===786){label='Special VVIP';amount=specials[n];}
+ else if(n<=10){label='VVIP';amount=specials[n];}
+ else if(n<=100){label='VIP Gold';amount=specials[n]??499;}
+ else if(n<=1000){label='VIP Silver';amount=specials[n]??199;}
+ else{label='Free ID';amount=0;}
+ tier.textContent=label;
+ price.textContent=amount===null?'Not for sale':amount===0?'FREE':'$'+amount.toLocaleString('en-US')+' USD';
+ status.textContent='Live availability not verified · Sales disabled';
+}
+input.addEventListener('input',update);update();
+})();
+</script>
+</body>
+</html>
