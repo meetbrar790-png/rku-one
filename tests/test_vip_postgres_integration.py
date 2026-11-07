@@ -61,6 +61,40 @@ class VipPostgresIntegrationTests(unittest.TestCase):
             outcomes = list(pool.map(attempt, ("A", "B")))
         self.assertEqual(sorted(outcomes), [False, True])
 
+    def test_existing_id_is_not_reservable_in_guarded_transaction(self):
+        # Isolated model only: the live registration path does NOT yet
+        # use this shared lock or reservation check.
+        issued_table = "rku_issued_test_" + uuid.uuid4().hex
+        with psycopg.connect(self.url) as conn:
+            conn.execute(
+                sql.SQL("CREATE TABLE {} (rku_id BIGINT PRIMARY KEY)").format(
+                    sql.Identifier(issued_table)
+                )
+            )
+            conn.execute(
+                sql.SQL("INSERT INTO {} (rku_id) VALUES (1)").format(
+                    sql.Identifier(issued_table)
+                )
+            )
+        try:
+            with psycopg.connect(self.url) as conn:
+                conn.execute("SELECT pg_advisory_xact_lock(%s)", (714209,))
+                inserted = conn.execute(
+                    sql.SQL(
+                        "INSERT INTO {} (rku_id, owner) "
+                        "SELECT %s, %s WHERE NOT EXISTS "
+                        "(SELECT 1 FROM {} WHERE rku_id = %s) "
+                        "ON CONFLICT DO NOTHING RETURNING rku_id"
+                    ).format(sql.Identifier(self.table), sql.Identifier(issued_table)),
+                    (1, "buyer", 1),
+                ).fetchone()
+                self.assertIsNone(inserted)
+        finally:
+            with psycopg.connect(self.url) as conn:
+                conn.execute(
+                    sql.SQL("DROP TABLE IF EXISTS {}").format(sql.Identifier(issued_table))
+                )
+
     def test_rollback_does_not_hold_number(self):
         with psycopg.connect(self.url) as conn:
             conn.execute(
