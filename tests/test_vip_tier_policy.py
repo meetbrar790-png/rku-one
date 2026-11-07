@@ -1,9 +1,15 @@
 import unittest
 
-from vip_tier_policy import vip_tier, is_paid_premium_id, is_available_for_sale
+from vip_tier_policy import (vip_tier, is_paid_premium_id,
+                             is_available_for_sale, VIP_PRICE_CURRENCY, FREE_ID_START)
 
 
 class VipTierPolicyTests(unittest.TestCase):
+    def test_usd_and_free_boundary(self):
+        self.assertEqual(VIP_PRICE_CURRENCY, 'USD')
+        self.assertEqual(FREE_ID_START, 1001)
+        self.assertEqual(vip_tier(FREE_ID_START), 'normal')
+
     def test_tier_boundaries(self):
         cases = {1: "founder", 2: "vvip", 10: "vvip",
                  11: "vip_gold", 100: "vip_gold",
