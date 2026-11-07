@@ -52,6 +52,8 @@ jobs:
         run: python -m unittest discover -s tests -p 'test_vip_duplicate_email_postgres.py' -v
       - name: Run concurrent full registration VIP PostgreSQL test
         run: python -m unittest discover -s tests -p 'test_vip_concurrent_full_registration.py' -v
+      - name: Run full registration service concurrency and rollback tests
+        run: python -m unittest discover -s tests -p 'test_vip_full_service_transactions.py' -v
       - name: Run disposable full registration service tests
         run: python -m unittest discover -s tests -p 'test_vip_full_registration_service.py' -v
       - name: Run full user registration VIP PostgreSQL test
