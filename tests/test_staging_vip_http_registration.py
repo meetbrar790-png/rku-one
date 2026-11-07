@@ -12,7 +12,6 @@ from unittest.mock import patch
 try:
     import psycopg
     from psycopg import sql
-    from fastapi.testclient import TestClient
     from api import app
 except ImportError:
     psycopg = None
@@ -25,6 +24,7 @@ from staging_vip_api_adapter import staged_vip_register
                      "Disposable PostgreSQL test DB required")
 class StagedVipHttpRegistrationTests(unittest.TestCase):
     def test_http_register_skips_reserved_id_and_rejects_duplicate(self):
+        from fastapi.testclient import TestClient  # HTTP-only CI dependency
         url = os.environ["RKU_VIP_TEST_DATABASE_URL"]
         assert_disposable_staging_url(url)
         suffix = uuid.uuid4().hex
