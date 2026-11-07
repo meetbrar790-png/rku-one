@@ -42,6 +42,8 @@ jobs:
         run: python staging_db_connection_check.py
       - name: Test real registration API handler in isolated schema
         run: python -m unittest discover -s tests -p 'test_actual_registration_api_staging.py' -v
+      - name: Rehearse VIP-aware registration via real API handler
+        run: python -m unittest discover -s tests -p 'test_staging_vip_api_integration.py' -v
       - name: Run isolated PostgreSQL integration tests
         run: python -m unittest discover -s tests -p 'test_vip_*prototype.py' -v
       - name: Run transactional allocator concurrency tests
