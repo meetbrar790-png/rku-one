@@ -1,6 +1,6 @@
 """Proposed RKU ONE VIP tier policy. Pure functions; no live allocation changes.
 
-Owner proposal: ID 1 founder-held; 2-10 VVIP; IDs 11, 13, 786
+Owner proposal: ID 1 founder-held; 2-10 VVIP; ID 11 company-reserved (RKU Film Production); IDs 13, 786
 Special VVIP; other 12-100 VIP Gold; other 101-1000 VIP Silver;
 1001+ normal/free.
 Premium prices are denominated in USD. Exact amounts are not yet decided.
@@ -10,7 +10,8 @@ Previously issued IDs remain issued and cannot be sold again.
 
 VIP_PRICE_CURRENCY = "USD"
 FREE_ID_START = 1001
-SPECIAL_VVIP_IDS = frozenset({11, 13, 786})
+COMPANY_RESERVED_IDS = frozenset({11})
+SPECIAL_VVIP_IDS = frozenset({13, 786})
 
 
 def vip_tier(rku_id: int) -> str:
@@ -18,6 +19,8 @@ def vip_tier(rku_id: int) -> str:
         raise ValueError("RKU ID must be a positive integer")
     if rku_id == 1:
         return "founder"
+    if rku_id in COMPANY_RESERVED_IDS:
+        return "company_reserved"
     if rku_id in SPECIAL_VVIP_IDS:
         return "special_vvip"
     if rku_id <= 10:
