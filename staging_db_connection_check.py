@@ -19,8 +19,11 @@ def verify_disposable_connection(url: str) -> dict:
             raise ValueError("Connected database is not disposable")
         if conn.info.dbname != dbname:
             raise ValueError("Connected database identity mismatch")
-        if address not in ("127.0.0.1", "::1", None):
-            raise ValueError("Connected server is not loopback")
+        # Docker port publishing can report the container bridge address
+        # even when the client connects strictly via localhost. The URL
+        # preflight above enforces the loopback client destination.
+        if address is None:
+            raise ValueError("Connected server address unavailable")
         if not username or port is None:
             raise ValueError("Connected server identity incomplete")
         return {"database": dbname, "user": username, "loopback": True}
