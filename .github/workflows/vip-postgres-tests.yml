@@ -42,5 +42,7 @@ jobs:
         run: python -m unittest discover -s tests -p 'test_vip_cross_path_lock.py' -v
       - name: Run allocator rollback tests
         run: python -m unittest discover -s tests -p 'test_vip_allocator_rollback.py' -v
+      - name: Run VIP reservation durability tests
+        run: python -m unittest discover -s tests -p 'test_vip_reservation_durability.py' -v
       - name: Run VIP PostgreSQL reservation tests
         run: python -m unittest discover -s tests -p 'test_vip_postgres_integration.py' -v
