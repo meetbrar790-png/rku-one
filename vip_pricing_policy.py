@@ -10,7 +10,7 @@ CURRENCY = "USD"
 SPECIAL_PRICES_USD = {
     2: 9999, 3: 7999, 4: 5999, 5: 4999, 6: 3999,
     7: 7777, 8: 6999, 9: 4999, 10: 5999,
-    13: 4999, 786: 3999, 100: 999, 1000: 499,
+    13: 4999, 786: 4999, 100: 1499, 1000: 999,
 }
 
 
@@ -26,7 +26,7 @@ def proposed_price_usd(rku_id: int):
     if tier == "vip_gold":
         return 499
     if tier == "vip_silver":
-        return 99
+        return 199
     raise ValueError("Missing price for premium tier")
 
 
