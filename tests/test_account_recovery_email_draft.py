@@ -21,7 +21,9 @@ class RecoveryEmailDraftTests(unittest.TestCase):
     def test_untrusted_or_insecure_origin_rejected(self):
         token = new_reset_token()
         for origin in (
-            "http://rkuone.com", "https://rkuone.com.evil.org/path",\n            "https://evil.example", "https://sub.rkuone.com",\n            "https://rkuone.com:8443",
+            "http://rkuone.com", "https://rkuone.com.evil.org/path",
+            "https://evil.example", "https://sub.rkuone.com",
+            "https://rkuone.com:8443",
             "https://user:pass@rkuone.com", "https://rkuone.com/?next=bad",
             "https://rkuone.com/#fragment", "javascript:alert(1)",
         ):
