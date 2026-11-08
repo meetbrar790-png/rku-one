@@ -3,7 +3,7 @@ from stripe_sandbox_checkout_plan import build_sandbox_checkout_spec, assert_str
 
 class StripeSandboxCheckoutPlanTests(unittest.TestCase):
     def test_price_is_in_us_cents_and_sales_disabled(self):
-        for number, cents in [(2,999900),(13,499900),(100,149900),(101,19900),(786,499900),(1000,99900)]:
+        for number, cents in [(2,999900),(13,499900),(100,149900),(101,19900),(786,499900)]:
             with self.subTest(number=number):
                 spec=build_sandbox_checkout_spec(number,issued_ids=set(),reserved_ids=set())
                 self.assertEqual(spec.unit_amount,cents)
@@ -13,7 +13,7 @@ class StripeSandboxCheckoutPlanTests(unittest.TestCase):
                 self.assertTrue(spec.adaptive_pricing_requested)
 
     def test_reserved_issued_and_free_ids_rejected(self):
-        for number in (1,11,1001,100000):
+        for number in (1,11,1000,1001,100000):
             with self.assertRaises(ValueError):
                 build_sandbox_checkout_spec(number,issued_ids=set(),reserved_ids=set())
         with self.assertRaises(ValueError):
