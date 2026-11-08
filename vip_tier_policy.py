@@ -2,14 +2,14 @@
 
 Owner proposal: ID 1 founder-held; 2-10 VVIP; ID 11 company-reserved (RKU Film Production); IDs 13, 786
 Special VVIP; other 12-100 VIP Gold; other 101-999 VIP Silver;
-1000+ normal/free.
-Premium prices are denominated in USD. Exact amounts are not yet decided.
+1001+ normal/free.
+Premium prices are denominated in USD. Prices are set in vip_pricing_policy.py; sales are not enabled.
 Previously issued IDs remain issued and cannot be sold again.
 """
 
 
 VIP_PRICE_CURRENCY = "USD"
-FREE_ID_START = 1000
+FREE_ID_START = 1001
 COMPANY_RESERVED_IDS = frozenset({11})
 SPECIAL_VVIP_IDS = frozenset({13, 786})
 
