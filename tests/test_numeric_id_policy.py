@@ -27,7 +27,7 @@ class NumericIdPolicyTests(unittest.TestCase):
         # previously assigned IDs or force a specific VIP number.
         from unittest.mock import MagicMock
         conn = MagicMock()
-        conn.execute.return_value.fetchone.return_value = (9001,)
+        conn.execute.return_value.fetchone.side_effect = [("public.users_rku_id_seq",), (9001,), (False,), (9001,)]
         manager = MagicMock()
         manager.__enter__.return_value = conn
         with patch("registration.get_connection", return_value=manager), patch(
