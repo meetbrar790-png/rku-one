@@ -1,6 +1,8 @@
 import os
 import psycopg
 from pwdlib import PasswordHash
+from vip_tier_policy import FREE_ID_START
+from vip_allocator_prototype import ALLOCATION_LOCK_KEY
 
 password_hash = PasswordHash.recommended()
 
@@ -40,14 +42,36 @@ def register_user(email, password):
     hashed = password_hash.hash(password)
 
     with get_connection() as conn:
-        result = conn.execute(
-            """
-            INSERT INTO users (email, password_hash)
-            VALUES (%s, %s)
-            RETURNING rku_id
-            """,
-            (email, hashed)
-        ).fetchone()
+        # Shared transaction lock: all future VIP allocation paths must use it.
+        conn.execute("SELECT pg_advisory_xact_lock(%s)", (ALLOCATION_LOCK_KEY,))
+        # Existing IDs remain unchanged. Never reset the live sequence.
+        # Consume pre-1000 sequence values without assigning them.
+        sequence_name = conn.execute(
+            "SELECT pg_get_serial_sequence('users', 'rku_id')"
+        ).fetchone()[0]
+        if not sequence_name:
+            raise RuntimeError("RKU ID identity sequence missing")
+        result = None
+        for _ in range(10000):
+            candidate = conn.execute(
+                "SELECT nextval(%s::regclass)", (sequence_name,)
+            ).fetchone()[0]
+            if candidate < FREE_ID_START:
+                continue
+            occupied = conn.execute(
+                "SELECT EXISTS(SELECT 1 FROM users WHERE rku_id=%s)",
+                (candidate,),
+            ).fetchone()[0]
+            if occupied:
+                continue
+            result = conn.execute(
+                "INSERT INTO users (rku_id, email, password_hash) "
+                "VALUES (%s, %s, %s) RETURNING rku_id",
+                (candidate, email, hashed),
+            ).fetchone()
+            break
+        if result is None:
+            raise RuntimeError("Free RKU ID allocation exhausted review limit")
 
     return {"rku_id": result[0], "email": email}
 
