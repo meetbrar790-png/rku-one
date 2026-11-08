@@ -7,7 +7,7 @@ from vip_tier_policy import FREE_ID_START, vip_tier
 
 
 def is_free_registration_id(rku_id: int) -> bool:
-    """True only for normal/free IDs, starting at 1001."""
+    """True only for normal/free IDs, starting at 1000."""
     return vip_tier(rku_id) == "normal"
 
 
