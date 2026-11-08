@@ -1,7 +1,7 @@
 """Real registration API handler against an isolated PostgreSQL schema.
 
 No live DB, no FastAPI startup/migrations, no mocked registration function.
-This test verifies free allocation starts at 1000 in disposable staging.
+This test verifies free allocation starts at 1001 in disposable staging.
 """
 import os
 import unittest
@@ -44,7 +44,7 @@ class ActualRegistrationApiStagingTests(unittest.TestCase):
             with patch("registration.get_connection", side_effect=isolated_connection):
                 result = register(UserData(email="new@example.com",
                                            password="staging-test-password-123"))
-                self.assertEqual(result["rku_id"], 1000)
+                self.assertEqual(result["rku_id"], 1001)
                 self.assertEqual(result["email"], "new@example.com")
                 with self.assertRaises(HTTPException) as error:
                     register(UserData(email="new@example.com",
@@ -52,7 +52,7 @@ class ActualRegistrationApiStagingTests(unittest.TestCase):
                 self.assertEqual(error.exception.status_code, 409)
             with isolated_connection() as conn:
                 rows = conn.execute("SELECT rku_id, email FROM users").fetchall()
-                self.assertEqual(rows, [(1000, "new@example.com")])
+                self.assertEqual(rows, [(1001, "new@example.com")])
         finally:
             with psycopg.connect(url) as conn:
                 conn.execute(sql.SQL("DROP SCHEMA IF EXISTS {} CASCADE").format(
