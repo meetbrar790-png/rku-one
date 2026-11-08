@@ -1,13 +1,13 @@
 """Free numeric ID allocation policy for the proposed RKU ONE launch.
 
 Pure validation only: no live database access, migration, or allocation.
-The production registration path is NOT yet wired to this policy.
+The production registration path reads FREE_ID_START from vip_tier_policy.
 """
 from vip_tier_policy import FREE_ID_START, vip_tier
 
 
 def is_free_registration_id(rku_id: int) -> bool:
-    """True only for normal/free IDs, starting at 1000."""
+    """True only for normal/free IDs, starting at 1001."""
     return vip_tier(rku_id) == "normal"
 
 
