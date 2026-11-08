@@ -13,7 +13,7 @@ class VipPriceCatalogueTests(unittest.TestCase):
                 self.assertEqual(entry["availability"], "not_verified")
                 if number in (1, 11):
                     self.assertIsNone(entry["list_price_usd"])
-                elif number >= 1001:
+                elif number >= 1000:
                     self.assertEqual(entry["list_price_usd"], 0)
                 else:
                     self.assertGreater(entry["list_price_usd"], 0)
@@ -23,7 +23,7 @@ class VipPriceCatalogueTests(unittest.TestCase):
         self.assertEqual(summary["founder_id"], 1)
         self.assertEqual(summary["company_reserved_id"], 11)
         self.assertEqual(summary["special_vvip_ids"], [13, 786])
-        self.assertEqual(summary["free_id_start"], 1001)
+        self.assertEqual(summary["free_id_start"], 1000)
         self.assertFalse(summary["sale_enabled"])
         self.assertEqual(summary["inventory_status"], "not_verified")
 
