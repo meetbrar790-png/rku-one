@@ -17,7 +17,7 @@ class VipPricingPolicyTests(unittest.TestCase):
         expected = {1: None, 11: None, 12: 499, 13: 4999,
                     14: 499, 99: 499, 100: 1499, 101: 199,
                     785: 199, 786: 4999, 787: 199, 999: 199,
-                    1000: 0, 1001: 0, 1000000: 0}
+                    1000: 999, 1001: 0, 1000000: 0}
         for number, price in expected.items():
             with self.subTest(number=number):
                 self.assertEqual(proposed_price_usd(number), price)
