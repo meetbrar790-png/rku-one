@@ -23,7 +23,7 @@ class FreeIdRegistrationPolicyTests(unittest.TestCase):
 
     def test_never_reissue_issued_or_reserved_free_ids(self):
         with self.assertRaises(ValueError):
-            assert_free_registration_candidate(1001, issued_ids={1000}, reserved_ids=set())
+            assert_free_registration_candidate(1001, issued_ids={1001}, reserved_ids=set())
         with self.assertRaises(ValueError):
             assert_free_registration_candidate(1000, issued_ids=set(), reserved_ids={1001})
 
