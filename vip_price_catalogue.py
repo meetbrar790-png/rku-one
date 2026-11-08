@@ -37,8 +37,8 @@ def catalogue_summary() -> dict:
         "founder_id": 1,
         "company_reserved_id": 11,
         "special_vvip_ids": [13, 786],
-        "paid_id_range": [2, 1000],
-        "free_id_start": 1001,
+        "paid_id_range": [2, 999],
+        "free_id_start": 1000,
         "price_status": "proposed",
         "inventory_status": "not_verified",
     }
