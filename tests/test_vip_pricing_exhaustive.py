@@ -14,7 +14,7 @@ class ExhaustiveVipPriceTests(unittest.TestCase):
                 if number in {1, 11}:
                     self.assertIsNone(price)
                     self.assertIsNone(sale_quote_usd(number, set(), set()))
-                elif number >= 1000:
+                elif number >= 1001:
                     self.assertEqual(price, 0)
                     self.assertIsNone(sale_quote_usd(number, set(), set()))
                 else:
@@ -33,7 +33,7 @@ class ExhaustiveVipPriceTests(unittest.TestCase):
             100: ("vip_gold", 1499), 101: ("vip_silver", 199),
             785: ("vip_silver", 199), 786: ("special_vvip", 4999),
             787: ("vip_silver", 199), 999: ("vip_silver", 199),
-            1000: ("normal", 0), 1001: ("normal", 0),
+            1000: ("vip_silver", 999), 1001: ("normal", 0),
         }
         for number, (tier, price) in expected.items():
             with self.subTest(rku_id=number):
