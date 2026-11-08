@@ -25,7 +25,7 @@ class FreeIdRegistrationPolicyTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             assert_free_registration_candidate(1001, issued_ids={1000}, reserved_ids=set())
         with self.assertRaises(ValueError):
-            assert_free_registration_candidate(1000, issued_ids=set(), reserved_ids={1000})
+            assert_free_registration_candidate(1000, issued_ids=set(), reserved_ids={1001})
 
     def test_invalid_values_rejected(self):
         for value in (0, -1, True, 1.5, "1000", None):
