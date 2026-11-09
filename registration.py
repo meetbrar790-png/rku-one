@@ -57,7 +57,14 @@ def register_user(email, password):
                 "SELECT nextval(%s::regclass)", (sequence_name,)
             ).fetchone()[0]
             if candidate < FREE_ID_START:
-                continue
+                # Advance reserved IDs in one database round-trip rather than
+                # issuing hundreds of separate queries on the first signup.
+                # Never reset or rewind the sequence; nextval is atomic.
+                candidate = conn.execute(
+                    "SELECT MAX(nextval(%s::regclass)) "
+                    "FROM generate_series(1, %s)",
+                    (sequence_name, FREE_ID_START - candidate),
+                ).fetchone()[0]
             occupied = conn.execute(
                 "SELECT EXISTS(SELECT 1 FROM users WHERE rku_id=%s)",
                 (candidate,),
