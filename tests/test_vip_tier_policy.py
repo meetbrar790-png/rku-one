@@ -15,14 +15,14 @@ class VipTierPolicyTests(unittest.TestCase):
                  11: "company_reserved", 12: "vip_gold",
                  13: "special_vvip", 14: "vip_gold", 100: "vip_gold",
                  101: "vip_silver", 785: "vip_silver",
-                 786: "special_vvip", 787: "vip_silver", 1000: "vip_silver",
+                 786: "special_vvip", 787: "vip_silver", 999: "vip_silver", 1000: "vip_silver",
                  1001: "normal", 999999999: "normal"}
         for number, expected in cases.items():
             with self.subTest(number=number):
                 self.assertEqual(vip_tier(number), expected)
 
     def test_premium_only_2_to_1000(self):
-        for number in (2, 10, 13, 100, 101, 786, 1000):
+        for number in (2, 10, 13, 100, 101, 786, 999, 1000):
             self.assertTrue(is_paid_premium_id(number))
         for number in (1, 1001, 100000):
             self.assertFalse(is_paid_premium_id(number))

@@ -1,6 +1,6 @@
-"""Proposed launch list prices for RKU ONE numeric IDs in USD.
+"""Owner-finalized launch list prices for RKU ONE numeric IDs in USD.
 
-Business proposal only. No checkout, payment or live ID allocation.
+Pricing policy only. No checkout, payment or live ID allocation.
 Prices are one-time list prices, excluding any applicable tax.
 Never offer an already-issued ID for sale. ID 1 and ID 11 are not for sale.
 """

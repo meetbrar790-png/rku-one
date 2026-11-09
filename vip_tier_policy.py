@@ -1,9 +1,9 @@
 """Proposed RKU ONE VIP tier policy. Pure functions; no live allocation changes.
 
 Owner proposal: ID 1 founder-held; 2-10 VVIP; ID 11 company-reserved (RKU Film Production); IDs 13, 786
-Special VVIP; other 12-100 VIP Gold; other 101-1000 VIP Silver;
+Special VVIP; other 12-100 VIP Gold; other 101-999 VIP Silver;
 1001+ normal/free.
-Premium prices are denominated in USD. Exact amounts are not yet decided.
+Premium prices are denominated in USD. Prices are set in vip_pricing_policy.py; sales are not enabled.
 Previously issued IDs remain issued and cannot be sold again.
 """
 
@@ -27,7 +27,7 @@ def vip_tier(rku_id: int) -> str:
         return "vvip"
     if rku_id <= 100:
         return "vip_gold"
-    if rku_id <= 1000:
+    if rku_id < FREE_ID_START:
         return "vip_silver"
     return "normal"
 

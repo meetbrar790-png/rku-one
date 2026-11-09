@@ -39,6 +39,6 @@ def catalogue_summary() -> dict:
         "special_vvip_ids": [13, 786],
         "paid_id_range": [2, 1000],
         "free_id_start": 1001,
-        "price_status": "proposed",
+        "price_status": "owner_finalized",
         "inventory_status": "not_verified",
     }
