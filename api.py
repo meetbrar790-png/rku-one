@@ -12,7 +12,7 @@ from mail_store import setup_mail, deliver, deliver_many, mailbox
 from mail_auth import issue_token, authenticated_id
 from profiles import setup_profiles, get_profile, save_profile
 from contacts import setup_contacts, list_contacts, save_contact, delete_contact
-from attachment_store import setup_attachment_table, save_attachment, get_owned_attachment
+from attachment_store import setup_attachment_table, setup_message_attachments, save_attachment, get_accessible_attachment
 from private_attachments import upload_private, download_private, validate_attachment, MAX_BYTES, StorageError
 
 @asynccontextmanager
@@ -26,6 +26,7 @@ async def lifespan(app: FastAPI):
     logging.warning("RKU ONE startup: initializing contacts tables")
     setup_contacts()
     setup_attachment_table()
+    setup_message_attachments()
     logging.warning("RKU ONE startup: database initialization complete")
     yield
 
@@ -54,6 +55,7 @@ class MailData(BaseModel):
     to: int | list[int]
     subject: str
     body: str
+    attachment_id: int | None = None
 
 class UserData(BaseModel):
     email: EmailStr
@@ -105,7 +107,7 @@ def send_message(message: MailData, authorization: str | None = Header(default=N
         raise HTTPException(400, "Please enter a valid recipient, subject and message")
     try:
         recipients = message.to if isinstance(message.to, list) else [message.to]
-        count = deliver_many(sender, recipients, message.subject.strip(), message.body.strip())
+        count = deliver_many(sender, recipients, message.subject.strip(), message.body.strip(), message.attachment_id)
     except ValueError as exc:
         if str(exc).startswith("Sending limit reached"):
             raise HTTPException(status_code=429, detail=str(exc), headers={"Retry-After": "60"})
@@ -204,7 +206,7 @@ def attachment_download(attachment_id: int, authorization: str | None = Header(d
     owner = authenticated_id(authorization)
     if attachment_id < 1:
         raise HTTPException(404, "Attachment not found")
-    row = get_owned_attachment(owner, attachment_id)
+    row = get_accessible_attachment(owner, attachment_id)
     if not row:
         raise HTTPException(404, "Attachment not found")
     path, mime, filename = row
