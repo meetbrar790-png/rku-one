@@ -18,6 +18,8 @@ class SupabaseStorageContractTests(unittest.TestCase):
         self.assertIn("/storage/v1/object/rku-one-test-attachments/1002/", args[0])
         self.assertEqual(kwargs["headers"]["x-upsert"], "false")
         self.assertEqual(kwargs["headers"]["Content-Type"], "application/pdf")
+        self.assertEqual(kwargs["headers"]["apikey"], "sb_secret_fake")
+        self.assertNotIn("Authorization", kwargs["headers"])
         self.assertEqual(kwargs["content"], b"%PDF-1.7\n")
         client.post.return_value.raise_for_status.assert_called_once()
 
@@ -31,6 +33,8 @@ class SupabaseStorageContractTests(unittest.TestCase):
             result = storage.download_private(path)
         self.assertEqual(result, b"%PDF-1.7\n")
         self.assertIn("/storage/v1/object/authenticated/rku-one-test-attachments/", client.get.call_args.args[0])
+        self.assertEqual(client.get.call_args.kwargs["headers"]["apikey"], "sb_secret_fake")
+        self.assertNotIn("Authorization", client.get.call_args.kwargs["headers"])
 
     def test_download_rejects_oversized_response(self):
         client = MagicMock()
