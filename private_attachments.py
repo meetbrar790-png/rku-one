@@ -18,7 +18,7 @@ ALLOWED_TYPES = {
     "image/webp": ".webp",
     "application/pdf": ".pdf",
 }
-PROJECT_RE = re.compile(r"^https://[a-z0-9-]+\\.supabase\\.co$")
+PROJECT_RE = re.compile(r"^https://[a-z0-9-]+\.supabase\.co$")
 
 
 class StorageError(Exception):
@@ -75,7 +75,7 @@ def upload_private(owner_id: int, content: bytes, mime: str) -> str:
 
 def download_private(path: str) -> bytes:
     """Only call AFTER verifying the requesting user's access in the mail database."""
-    if not re.fullmatch(r"[1-9][0-9]*/[a-f0-9]{48}\\.(jpg|png|webp|pdf)", path):
+    if not re.fullmatch(r"[1-9][0-9]*/[a-f0-9]{48}\.(jpg|png|webp|pdf)", path):
         raise ValueError("Invalid object path")
     url, key = storage_config()
     endpoint = f"{url}/storage/v1/object/authenticated/{BUCKET}/{quote(path, safe='/')}"
