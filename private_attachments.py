@@ -55,7 +55,7 @@ def validate_attachment(content: bytes, mime: str):
 
 
 def _headers(key: str):
-    return {"apikey": key, "Authorization": f"Bearer {key}"}
+    return {"apikey": key}
 
 
 def upload_private(owner_id: int, content: bytes, mime: str) -> str:
