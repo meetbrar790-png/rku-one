@@ -16,6 +16,40 @@ def setup_attachment_table():
         conn.execute("CREATE INDEX IF NOT EXISTS idx_private_attachments_owner ON private_attachments(owner,id DESC)")
 
 
+def setup_message_attachments():
+    with get_connection() as conn:
+        conn.execute("""CREATE TABLE IF NOT EXISTS message_attachments (
+            message_id BIGINT NOT NULL REFERENCES messages(id) ON DELETE CASCADE,
+            attachment_id BIGINT NOT NULL REFERENCES private_attachments(id),
+            PRIMARY KEY (message_id, attachment_id)
+        )""")
+        conn.execute("CREATE INDEX IF NOT EXISTS idx_message_attachments_attachment ON message_attachments(attachment_id)")
+
+
+def attachment_for_mail(owner, attachment_id):
+    with get_connection() as conn:
+        return conn.execute(
+            "SELECT id FROM private_attachments WHERE id=%s AND owner=%s",
+            (attachment_id, owner)
+        ).fetchone()
+
+
+def get_accessible_attachment(owner, attachment_id):
+    with get_connection() as conn:
+        return conn.execute(
+            """SELECT a.object_path,a.mime_type,a.filename
+               FROM private_attachments a
+               WHERE a.id=%s AND (
+                 a.owner=%s OR EXISTS (
+                   SELECT 1 FROM message_attachments ma
+                   JOIN messages m ON m.id=ma.message_id
+                   WHERE ma.attachment_id=a.id AND m.recipient=%s
+                 )
+               )""",
+            (attachment_id, owner, owner)
+        ).fetchone()
+
+
 def save_attachment(owner, path, mime, filename, size):
     with get_connection() as conn:
         row = conn.execute(
