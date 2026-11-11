@@ -33,9 +33,23 @@ def mailbox(owner, sent=False, before=None):
     query += " ORDER BY id DESC LIMIT 50"
     with get_connection() as conn:
         rows = conn.execute(query, tuple(params)).fetchall()
-    return [{"id":r[0],"from":r[1],"to":r[2],"subject":r[3],"body":r[4],"date":r[5].isoformat()} for r in rows]
+    message_ids = [r[0] for r in rows]
+    attachments = {}
+    if message_ids:
+        with get_connection() as conn:
+            links = conn.execute(
+                """SELECT ma.message_id,a.id,a.filename,a.mime_type,a.byte_size
+                   FROM message_attachments ma JOIN private_attachments a ON a.id=ma.attachment_id
+                   WHERE ma.message_id = ANY(%s)""", (message_ids,)
+            ).fetchall()
+        for msg_id, att_id, filename, mime, size in links:
+            attachments.setdefault(msg_id, []).append(
+                {"id": att_id, "filename": filename, "mime": mime, "size": size}
+            )
+    return [{"id":r[0],"from":r[1],"to":r[2],"subject":r[3],"body":r[4],"date":r[5].isoformat(),
+             "attachments":attachments.get(r[0],[])} for r in rows]
 
-def deliver_many(sender, recipients, subject, body):
+def deliver_many(sender, recipients, subject, body, attachment_id=None):
     recipients = list(dict.fromkeys(recipients))
     if not 1 <= len(recipients) <= 25 or any(type(r) is not int or r < 1 for r in recipients):
         raise ValueError("Enter 1 to 25 valid RKU IDs")
@@ -52,7 +66,21 @@ def deliver_many(sender, recipients, subject, body):
         missing = [r for r in recipients if r not in found]
         if missing:
             raise ValueError("Unknown RKU ID: " + ", ".join(map(str, missing)))
+        if attachment_id is not None:
+            owned = conn.execute(
+                "SELECT 1 FROM private_attachments WHERE id=%s AND owner=%s",
+                (attachment_id, sender)
+            ).fetchone()
+            if not owned:
+                raise ValueError("Attachment not found or not owned by sender")
         for recipient in recipients:
-            conn.execute("INSERT INTO messages(sender,recipient,subject,body) VALUES (%s,%s,%s,%s)",
-                         (sender,recipient,subject,body))
+            row = conn.execute(
+                "INSERT INTO messages(sender,recipient,subject,body) VALUES (%s,%s,%s,%s) RETURNING id",
+                (sender,recipient,subject,body)
+            ).fetchone()
+            if attachment_id is not None:
+                conn.execute(
+                    "INSERT INTO message_attachments(message_id,attachment_id) VALUES (%s,%s)",
+                    (row[0],attachment_id)
+                )
     return len(recipients)

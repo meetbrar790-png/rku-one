@@ -3,7 +3,8 @@ import logging
 from contextlib import asynccontextmanager
 
 from psycopg.errors import UniqueViolation
-from fastapi import FastAPI, HTTPException, Header
+from fastapi import FastAPI, HTTPException, Header, UploadFile, File
+from fastapi.responses import Response
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, EmailStr
 from registration import register_user, verify_login, setup_database
@@ -11,6 +12,8 @@ from mail_store import setup_mail, deliver, deliver_many, mailbox
 from mail_auth import issue_token, authenticated_id
 from profiles import setup_profiles, get_profile, save_profile
 from contacts import setup_contacts, list_contacts, save_contact, delete_contact
+from attachment_store import setup_attachment_table, setup_message_attachments, save_attachment, get_accessible_attachment
+from private_attachments import upload_private, download_private, validate_attachment, MAX_BYTES, StorageError
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -22,6 +25,8 @@ async def lifespan(app: FastAPI):
     setup_profiles()
     logging.warning("RKU ONE startup: initializing contacts tables")
     setup_contacts()
+    setup_attachment_table()
+    setup_message_attachments()
     logging.warning("RKU ONE startup: database initialization complete")
     yield
 
@@ -50,6 +55,7 @@ class MailData(BaseModel):
     to: int | list[int]
     subject: str
     body: str
+    attachment_id: int | None = None
 
 class UserData(BaseModel):
     email: EmailStr
@@ -101,7 +107,7 @@ def send_message(message: MailData, authorization: str | None = Header(default=N
         raise HTTPException(400, "Please enter a valid recipient, subject and message")
     try:
         recipients = message.to if isinstance(message.to, list) else [message.to]
-        count = deliver_many(sender, recipients, message.subject.strip(), message.body.strip())
+        count = deliver_many(sender, recipients, message.subject.strip(), message.body.strip()) if message.attachment_id is None else deliver_many(sender, recipients, message.subject.strip(), message.body.strip(), message.attachment_id)
     except ValueError as exc:
         if str(exc).startswith("Sending limit reached"):
             raise HTTPException(status_code=429, detail=str(exc), headers={"Retry-After": "60"})
@@ -172,3 +178,45 @@ def contacts_remove(contact: ContactData, authorization: str | None = Header(def
     if contact.rku_id < 1:
         raise HTTPException(400, "Invalid RKU ID")
     return delete_contact(owner, contact.rku_id)
+
+# Draft attachment endpoints. Objects remain private and accessible only to their owner.
+@app.post("/attachments/upload")
+async def attachment_upload(file: UploadFile = File(...), authorization: str | None = Header(default=None)):
+    owner = authenticated_id(authorization)
+    mime = file.content_type or ""
+    filename = (file.filename or "attachment").replace("\\", "/").split("/")[-1].strip()
+    if not filename or len(filename) > 150 or any(ord(c) < 32 for c in filename):
+        raise HTTPException(400, "Invalid attachment filename")
+    try:
+        content = await file.read(MAX_BYTES + 1)
+        validate_attachment(content, mime)
+        path = upload_private(owner, content, mime)
+        attachment_id = save_attachment(owner, path, mime, filename, len(content))
+        return {"id": attachment_id, "filename": filename, "size": len(content), "mime": mime}
+    except ValueError as exc:
+        raise HTTPException(400, str(exc))
+    except StorageError:
+        raise HTTPException(503, "Private attachment storage unavailable")
+    finally:
+        await file.close()
+
+
+@app.get("/attachments/{attachment_id}")
+def attachment_download(attachment_id: int, authorization: str | None = Header(default=None)):
+    owner = authenticated_id(authorization)
+    if attachment_id < 1:
+        raise HTTPException(404, "Attachment not found")
+    row = get_accessible_attachment(owner, attachment_id)
+    if not row:
+        raise HTTPException(404, "Attachment not found")
+    path, mime, filename = row
+    try:
+        content = download_private(path)
+    except StorageError:
+        raise HTTPException(503, "Private attachment storage unavailable")
+    from urllib.parse import quote
+    return Response(content=content, media_type=mime, headers={
+        "Content-Disposition": "attachment; filename*=UTF-8''" + quote(filename, safe=""),
+        "Cache-Control": "no-store",
+        "X-Content-Type-Options": "nosniff",
+    })
