@@ -78,7 +78,7 @@ def delete_private(path: str) -> None:
     if not re.fullmatch(r"[1-9][0-9]*/[a-f0-9]{48}\.(jpg|png|webp|pdf)", path):
         raise ValueError("Invalid object path")
     url, key = storage_config()
-    endpoint = f"{url}/storage/v1/object/${BUCKET}/${quote(path, safe='/')}"
+    endpoint = f"{url}/storage/v1/object/{BUCKET}/{quote(path, safe='/')}"
     try:
         with httpx.Client(timeout=30, follow_redirects=False) as client:
             response = client.delete(endpoint, headers=_headers(key))
