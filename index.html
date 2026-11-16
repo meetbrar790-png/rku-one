@@ -44,10 +44,23 @@ button{background:#276ee7;color:#fff}
 #mailPanel{max-width:860px;margin:24px auto}
 footer{margin-top:42px}
 @media(max-width:640px){main{padding:12px 14px 48px}.hero{padding:48px 21px 34px;border-radius:22px}.intro-grid{grid-template-columns:1fr;gap:10px}.intro-item{padding:18px}.site-top{padding-bottom:14px}.hero h1{font-size:clamp(38px,10vw,54px)}}
+
+/* Clear sign-in journey, keyboard accessibility, and focused logged-in workspace. */
+html{scroll-behavior:smooth}
+.hero-actions{display:flex;align-items:center;justify-content:center;gap:16px;flex-wrap:wrap;margin:27px auto 0}
+.hero-primary{display:inline-flex;align-items:center;justify-content:center;gap:12px;min-height:50px;background:#276ee7;color:#fff;text-decoration:none;font-weight:750;padding:13px 24px;border-radius:12px;box-shadow:0 8px 24px #276ee730}
+.hero-primary:hover{background:#1758c5}
+.hero-secondary{font-size:13px;color:#586a83}
+.hero-primary:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid #6aa9ff;outline-offset:3px}
+#authTabs{scroll-margin-top:20px}
+body:has(#mailPanel:not([hidden])) .hero,body:has(#mailPanel:not([hidden])) .intro-grid{display:none}
+body:has(#mailPanel:not([hidden])) main{max-width:900px}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+@media(max-width:640px){.hero-actions{flex-direction:column;gap:11px}.hero-primary{width:100%}}
 </style>
 </head>
 <body><main><div class="site-top"><div class="brand" aria-label="RKU ONE">RKU <span>ONE</span></div><div style="display:flex;align-items:center;gap:8px"><label for="languageSelect">Language</label><select id="languageSelect" aria-label="Select language" style="padding:10px;border-radius:10px;font-size:14px"><option value="en">English</option><option value="pa">ਪੰਜਾਬੀ</option></select></div></div>
-<header class="hero"><span class="hero-kicker">RKU ONE · Early Access</span><h1>One World.<br><em>One Numeric ID.</em></h1><p>A simpler way to connect. Discover your unique numeric identity and communicate directly with other RKU IDs.</p><p class="hero-note">Private beta in progress · RKU ID-to-ID Mail available for existing users</p></header>
+<header class="hero"><span class="hero-kicker">RKU ONE · Early Access</span><h1>One World.<br><em>One Numeric ID.</em></h1><p>A simpler way to connect. Discover your unique numeric identity and communicate directly with other RKU IDs.</p><div class="hero-actions"><a class="hero-primary" href="#authTabs">Sign in to RKU ONE <span aria-hidden="true">→</span></a><span class="hero-secondary">New accounts: limited beta access</span></div><p class="hero-note">Private beta in progress · RKU ID-to-ID Mail available for existing users</p></header>
 <section class="intro-grid" aria-label="RKU ONE highlights"><div class="intro-item"><span class="symbol" aria-hidden="true">◈</span><strong>Your own numeric identity</strong><p>A distinctive RKU ID built for a connected world.</p></div><div class="intro-item"><span class="symbol" aria-hidden="true">✉</span><strong>Direct ID-to-ID Mail</strong><p>Send and receive messages inside the RKU ONE network.</p></div><div class="intro-item"><span class="symbol" aria-hidden="true">◎</span><strong>Designed for simplicity</strong><p>Clear communication with an easy-to-use interface.</p></div></section>
 <div class="tabs" id="authTabs"><button type="button" id="showLogin" class="active">🔑 Login / ਲਾਗਇਨ</button><button type="button" id="showRegister">➕ New ID / ਨਵੀਂ ID</button></div><section class="card auth-card" id="registerCard" hidden><h2>Create your RKU ID / ਨਵੀਂ ID ਬਣਾਓ</h2><p class="muted">Every account receives its own unique number.</p>
 <form id="register"><label for="regEmail">Email</label><input id="regEmail" type="email" autocomplete="email" required>
