@@ -64,6 +64,13 @@ def home():
 @app.post("/register")
 def register(user: UserData):
     try:
+        # Optional private-beta allowlist. Configure before inviting testers.
+        # An unset allowlist preserves existing registration behavior.
+        import os
+        allowed = {address.strip().lower() for address in
+                   os.environ.get("RKU_BETA_ALLOWED_EMAILS", "").split(",") if address.strip()}
+        if allowed and user.email.strip().lower() not in allowed:
+            raise HTTPException(status_code=403, detail="Registration is invite-only during private beta")
         result = register_user(user.email, user.password)
         return result
     except ValueError as e:
