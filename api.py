@@ -73,6 +73,8 @@ def register(user: UserData):
             raise HTTPException(status_code=403, detail="Registration is invite-only during private beta")
         result = register_user(user.email, user.password)
         return result
+    except HTTPException:
+        raise
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
     except UniqueViolation:
