@@ -5,9 +5,63 @@
 <title>RKU ONE | Your Global Digital ID</title>
 <style>
 :root{color-scheme:dark}*{box-sizing:border-box}body{margin:0;background:#080b16;color:#f6f7fb;font:16px system-ui,Arial,sans-serif}main{max-width:740px;margin:auto;padding:24px 16px 60px}header{text-align:center;padding:34px 8px}h1{font-size:clamp(40px,9vw,66px);margin:0;color:#f5c84b;letter-spacing:3px}header p{color:#c7d0e0}.card{background:#161d30;border:1px solid #323c55;border-radius:18px;padding:24px;margin:18px 0;box-shadow:0 10px 35px #0003}h2{margin:0 0 15px;font-size:24px}label{display:block;margin:12px 0 6px}input{width:100%;padding:13px;border:1px solid #63708d;border-radius:10px;background:#0c1222;color:white;font-size:16px}button{background:#f5c84b;color:#10131a;border:0;border-radius:10px;padding:13px 18px;margin-top:17px;font-weight:700;font-size:16px;cursor:pointer;width:100%}button:disabled{opacity:.55;cursor:wait}.status{min-height:1.6em;overflow-wrap:anywhere}.ok{color:#88e6b4}.bad{color:#ff9e9e}.muted{color:#b5bfd1}footer{text-align:center;color:#9faabd;font-size:13px;margin-top:28px}.features{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px}.features div{background:#11182a;border-radius:12px;padding:17px}.features strong{color:#f5c84b}
-textarea{width:100%;min-height:110px;padding:13px;border:1px solid #63708d;border-radius:10px;background:#0c1222;color:white;font:16px system-ui}.mail-item{border-top:1px solid #323c55;padding:12px 0;overflow-wrap:anywhere;white-space:pre-wrap}.mail-item strong{color:#f5c84b}.mail-item small{color:#b5bfd1}#mailPanel[hidden]{display:none}.tabs{display:flex;gap:9px;margin:12px 0 18px}.tabs button{margin:0;flex:1;background:#27334d;color:#fff}.tabs button.active{background:#f5c84b;color:#111}.auth-card[hidden],.mail-view[hidden],#mailPanel[hidden]{display:none}.mail-view{margin-top:12px}.secondary{background:#293650;color:#fff}.tiny{font-size:14px;color:#b5bfd1}.mail-item{background:#0d1425;border-radius:10px;margin:10px 0;padding:15px}.mail-item span{display:block;margin-top:6px}input,textarea{font-size:16px;max-width:100%}textarea{resize:vertical}header{padding:18px 8px}.card{padding:20px;margin:14px 0}button{min-height:49px}</style>
+textarea{width:100%;min-height:110px;padding:13px;border:1px solid #63708d;border-radius:10px;background:#0c1222;color:white;font:16px system-ui}.mail-item{border-top:1px solid #323c55;padding:12px 0;overflow-wrap:anywhere;white-space:pre-wrap}.mail-item strong{color:#f5c84b}.mail-item small{color:#b5bfd1}#mailPanel[hidden]{display:none}.tabs{display:flex;gap:9px;margin:12px 0 18px}.tabs button{margin:0;flex:1;background:#27334d;color:#fff}.tabs button.active{background:#f5c84b;color:#111}.auth-card[hidden],.mail-view[hidden],#mailPanel[hidden]{display:none}.mail-view{margin-top:12px}.secondary{background:#293650;color:#fff}.tiny{font-size:14px;color:#b5bfd1}.mail-item{background:#0d1425;border-radius:10px;margin:10px 0;padding:15px}.mail-item span{display:block;margin-top:6px}input,textarea{font-size:16px;max-width:100%}textarea{resize:vertical}header{padding:18px 8px}.card{padding:20px;margin:14px 0}button{min-height:49px}
+/* Premium homepage concept: isolated from authenticated mail flows. */
+:root{color-scheme:light}
+body{background:#f8faff;color:#14243b;font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}
+main{max-width:1060px;padding:22px 22px 72px}
+header{padding:0}
+.site-top{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:9px 0 20px}
+.brand{font-size:23px;font-weight:850;letter-spacing:-.8px;color:#172b53}
+.brand span{color:#2673eb}
+.site-top label{font-size:13px;color:#425675}
+#languageSelect{background:#fff!important;color:#203354!important;border:1px solid #dce4f1!important}
+.hero{position:relative;overflow:hidden;padding:65px 34px 48px;text-align:center;border-radius:28px;background:linear-gradient(145deg,#fff 10%,#eaf3ff 100%);border:1px solid #e1eaf8;box-shadow:0 18px 65px #27487812}
+.hero:before{content:"";position:absolute;width:350px;height:350px;right:-210px;top:-210px;border:65px solid #c9e0ff77;border-radius:50%;pointer-events:none}
+.hero-kicker{display:inline-block;border:1px solid #c9dcfa;background:#edf5ff;border-radius:999px;color:#245cba;padding:8px 15px;font-size:12px;font-weight:750;letter-spacing:.12em;text-transform:uppercase}
+.hero h1{color:#152746;font-size:clamp(40px,7.5vw,76px);line-height:1.06;letter-spacing:-.06em;margin:22px auto 18px;max-width:780px}
+.hero h1 em{font-style:normal;color:#2875e9}
+.hero p{max-width:590px;margin:0 auto;color:#54647b;font-size:clamp(16px,2.3vw,20px);line-height:1.65}
+.hero-note{margin-top:24px!important;font-size:13px!important;color:#61728a!important}
+.intro-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin:22px 0}
+.intro-item{background:#fff;border:1px solid #e4eaf5;border-radius:18px;padding:22px;box-shadow:0 6px 20px #294a7910}
+.intro-item .symbol{font-size:25px;display:block;margin-bottom:14px}
+.intro-item strong{display:block;color:#172c4c;font-size:16px}
+.intro-item p{font-size:14px;line-height:1.55;color:#5c6b82;margin:8px 0 0}
+.card{background:#fff;color:#14243b;border:1px solid #e2e8f3;box-shadow:0 8px 26px #294a7910}
+h2,h3{color:#172c4c}
+.muted,.tiny,footer{color:#62728a}
+input,textarea{background:#fff;color:#1a2b45;border-color:#cbd5e5}
+button{background:#276ee7;color:#fff}
+.tabs button{background:#e9eff9;color:#284368}
+.tabs button.active{background:#276ee7;color:#fff}
+.secondary{background:#e9eff9;color:#284368}
+.mail-item{background:#f4f7fc;border-color:#dbe4f1}
+.mail-item strong,.features strong{color:#245fc5}
+.features div{background:#fff;border:1px solid #e2e8f3}
+#authTabs{max-width:600px;margin:28px auto 12px}
+.auth-card{max-width:600px;margin:14px auto 30px}
+#mailPanel{max-width:860px;margin:24px auto}
+footer{margin-top:42px}
+@media(max-width:640px){main{padding:12px 14px 48px}.hero{padding:48px 21px 34px;border-radius:22px}.intro-grid{grid-template-columns:1fr;gap:10px}.intro-item{padding:18px}.site-top{padding-bottom:14px}.hero h1{font-size:clamp(38px,10vw,54px)}}
+
+/* Clear sign-in journey, keyboard accessibility, and focused logged-in workspace. */
+html{scroll-behavior:smooth}
+.hero-actions{display:flex;align-items:center;justify-content:center;gap:16px;flex-wrap:wrap;margin:27px auto 0}
+.hero-primary{display:inline-flex;align-items:center;justify-content:center;gap:12px;min-height:50px;background:#276ee7;color:#fff;text-decoration:none;font-weight:750;padding:13px 24px;border-radius:12px;box-shadow:0 8px 24px #276ee730}
+.hero-primary:hover{background:#1758c5}
+.hero-secondary{font-size:13px;color:#586a83}
+.hero-primary:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid #6aa9ff;outline-offset:3px}
+#authTabs{scroll-margin-top:20px}
+body:has(#mailPanel:not([hidden])) .hero,body:has(#mailPanel:not([hidden])) .intro-grid{display:none}
+body:has(#mailPanel:not([hidden])) main{max-width:900px}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+@media(max-width:640px){.hero-actions{flex-direction:column;gap:11px}.hero-primary{width:100%}}
+</style>
 </head>
-<body><main><div style="display:flex;align-items:center;justify-content:flex-end;gap:8px;padding-top:8px"><label for="languageSelect" style="margin:0">🌐 Language / ਭਾਸ਼ਾ</label><select id="languageSelect" aria-label="Select language" style="background:#27334d;color:#fff;border:1px solid #63708d;border-radius:10px;padding:10px;font-size:16px"><option value="en">English</option><option value="pa">ਪੰਜਾਬੀ</option></select></div><header><h1>RKU ONE</h1><p>One World • One Digital Identity</p><p>ਇੱਕ ਦੁਨੀਆ • ਇੱਕ ਡਿਜੀਟਲ ਪਛਾਣ</p></header>
+<body><main><div class="site-top"><div class="brand" aria-label="RKU ONE">RKU <span>ONE</span></div><div style="display:flex;align-items:center;gap:8px"><label for="languageSelect">Language</label><select id="languageSelect" aria-label="Select language" style="padding:10px;border-radius:10px;font-size:14px"><option value="en">English</option><option value="pa">ਪੰਜਾਬੀ</option></select></div></div>
+<header class="hero"><span class="hero-kicker">RKU ONE · Early Access</span><h1>One World.<br><em>One Numeric ID.</em></h1><p>A simpler way to connect. Discover your unique numeric identity and communicate directly with other RKU IDs.</p><div class="hero-actions"><a class="hero-primary" href="#authTabs">Sign in to RKU ONE <span aria-hidden="true">→</span></a><span class="hero-secondary">New accounts: limited beta access</span></div><p class="hero-note">Private beta in progress · RKU ID-to-ID Mail available for existing users</p></header>
+<section class="intro-grid" aria-label="RKU ONE highlights"><div class="intro-item"><span class="symbol" aria-hidden="true">◈</span><strong>Your own numeric identity</strong><p>A distinctive RKU ID built for a connected world.</p></div><div class="intro-item"><span class="symbol" aria-hidden="true">✉</span><strong>Direct ID-to-ID Mail</strong><p>Send and receive messages inside the RKU ONE network.</p></div><div class="intro-item"><span class="symbol" aria-hidden="true">◎</span><strong>Designed for simplicity</strong><p>Clear communication with an easy-to-use interface.</p></div></section>
 <div class="tabs" id="authTabs"><button type="button" id="showLogin" class="active">🔑 Login / ਲਾਗਇਨ</button><button type="button" id="showRegister">➕ New ID / ਨਵੀਂ ID</button></div><section class="card auth-card" id="registerCard" hidden><h2>Create your RKU ID / ਨਵੀਂ ID ਬਣਾਓ</h2><p class="muted">Every account receives its own unique number.</p>
 <form id="register"><label for="regEmail">Email</label><input id="regEmail" type="email" autocomplete="email" required>
 <label for="regPass">Password (at least 12 characters)</label><input id="regPass" type="password" autocomplete="new-password" minlength="12" required>
