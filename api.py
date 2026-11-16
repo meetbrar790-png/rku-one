@@ -13,7 +13,7 @@ from mail_auth import issue_token, authenticated_id
 from profiles import setup_profiles, get_profile, save_profile
 from contacts import setup_contacts, list_contacts, save_contact, delete_contact
 from attachment_store import setup_attachment_table, setup_message_attachments, save_attachment, get_accessible_attachment
-from private_attachments import upload_private, download_private, validate_attachment, MAX_BYTES, StorageError
+from private_attachments import upload_private, download_private, delete_private, validate_attachment, MAX_BYTES, StorageError
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -191,7 +191,14 @@ async def attachment_upload(file: UploadFile = File(...), authorization: str | N
         content = await file.read(MAX_BYTES + 1)
         validate_attachment(content, mime)
         path = upload_private(owner, content, mime)
-        attachment_id = save_attachment(owner, path, mime, filename, len(content))
+        try:
+            attachment_id = save_attachment(owner, path, mime, filename, len(content))
+        except Exception:
+            try:
+                delete_private(path)
+            except (StorageError, ValueError):
+                logging.exception("Attachment cleanup failed; orphan may need manual reconciliation")
+            raise
         return {"id": attachment_id, "filename": filename, "size": len(content), "mime": mime}
     except ValueError as exc:
         raise HTTPException(400, str(exc))
