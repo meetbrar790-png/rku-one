@@ -73,6 +73,20 @@ def upload_private(owner_id: int, content: bytes, mime: str) -> str:
     return path
 
 
+def delete_private(path: str) -> None:
+    """Best-effort cleanup of an uploaded object if metadata persistence fails."""
+    if not re.fullmatch(r"[1-9][0-9]*/[a-f0-9]{48}\.(jpg|png|webp|pdf)", path):
+        raise ValueError("Invalid object path")
+    url, key = storage_config()
+    endpoint = f"{url}/storage/v1/object/{BUCKET}/{quote(path, safe='/')}"
+    try:
+        with httpx.Client(timeout=30, follow_redirects=False) as client:
+            response = client.delete(endpoint, headers=_headers(key))
+            response.raise_for_status()
+    except httpx.HTTPError as exc:
+        raise StorageError("Private attachment cleanup failed") from exc
+
+
 def download_private(path: str) -> bytes:
     """Only call AFTER verifying the requesting user's access in the mail database."""
     if not re.fullmatch(r"[1-9][0-9]*/[a-f0-9]{48}\.(jpg|png|webp|pdf)", path):
