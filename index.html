@@ -57,6 +57,37 @@ body:has(#mailPanel:not([hidden])) .hero,body:has(#mailPanel:not([hidden])) .int
 body:has(#mailPanel:not([hidden])) main{max-width:900px}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
 @media(max-width:640px){.hero-actions{flex-direction:column;gap:11px}.hero-primary{width:100%}}
+
+/* Compact, English-first global presentation. No changes to auth/mail logic. */
+body{font-size:15px}
+main{max-width:990px;padding:14px 16px 46px}
+.site-top{padding:5px 0 12px}
+.brand{font-size:21px}
+.site-top label{font-size:12px}
+#languageSelect{font-size:13px!important;padding:8px!important}
+.hero{padding:34px 24px 27px;border-radius:20px}
+.hero-kicker{font-size:10px;padding:6px 11px;letter-spacing:.08em}
+.hero h1{font-size:clamp(30px,5vw,52px);margin:13px auto 11px;line-height:1.12}
+.hero p{font-size:15px;line-height:1.5;max-width:520px}
+.hero-actions{margin:17px auto 0;gap:10px}
+.hero-primary{min-height:43px;padding:10px 17px;font-size:14px;border-radius:9px}
+.hero-secondary{font-size:12px}
+.hero-note{margin-top:13px!important;font-size:12px!important}
+.intro-grid{gap:11px;margin:15px 0}
+.intro-item{padding:15px;border-radius:13px}
+.intro-item .symbol{font-size:19px;margin-bottom:7px}
+.intro-item strong{font-size:14px}
+.intro-item p{font-size:12px;margin:5px 0 0}
+.card{padding:16px;margin:11px 0;border-radius:15px}
+h2{font-size:21px}
+label{font-size:14px;margin:9px 0 5px}
+input,textarea{padding:11px}
+button{font-size:14px;padding:10px 13px;min-height:43px;margin-top:11px}
+#authTabs{margin:17px auto 9px}
+.auth-card{margin:10px auto 20px}
+.features div{padding:14px}
+footer{margin-top:24px}
+@media(max-width:640px){main{padding:10px 13px 34px}.site-top{padding-bottom:10px}.brand{font-size:20px}.hero{padding:29px 17px 23px;border-radius:18px}.hero h1{font-size:clamp(30px,8vw,40px)}.hero p{font-size:14px}.hero-actions{gap:8px}.hero-primary{width:100%;min-height:42px}.intro-grid{gap:8px;margin:11px 0}.intro-item{padding:13px}.card{padding:15px}.features{gap:9px}}
 </style>
 </head>
 <body><main><div class="site-top"><div class="brand" aria-label="RKU ONE">RKU <span>ONE</span></div><div style="display:flex;align-items:center;gap:8px"><label for="languageSelect">Language</label><select id="languageSelect" aria-label="Select language" style="padding:10px;border-radius:10px;font-size:14px"><option value="en">English</option><option value="pa">ਪੰਜਾਬੀ</option></select></div></div>
@@ -174,6 +205,6 @@ const textWalker=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT);
 while(textWalker.nextNode()){const node=textWalker.currentNode;const key=node.nodeValue.trim();if(langMap[key])translationNodes.push({node,key});}
 function setLanguage(lang){const choice=lang==="pa"?1:0;document.documentElement.lang=lang;for(const {node,key} of translationNodes)node.nodeValue=langMap[key][choice];document.getElementById("languageSelect").value=lang;try{localStorage.setItem("rkuLanguage",lang);}catch(e){}}
 document.getElementById("languageSelect").addEventListener("change",e=>setLanguage(e.target.value));
-let initialLanguage="en";try{initialLanguage=localStorage.getItem("rkuLanguage")||((navigator.language||"").startsWith("pa")?"pa":"en");}catch(e){}
+let initialLanguage="en";try{initialLanguage=localStorage.getItem("rkuLanguage")||"en";}catch(e){}
 setLanguage(initialLanguage);
 </script></body></html>
