@@ -88,6 +88,26 @@ button{font-size:14px;padding:10px 13px;min-height:43px;margin-top:11px}
 .features div{padding:14px}
 footer{margin-top:24px}
 @media(max-width:640px){main{padding:10px 13px 34px}.site-top{padding-bottom:10px}.brand{font-size:20px}.hero{padding:29px 17px 23px;border-radius:18px}.hero h1{font-size:clamp(30px,8vw,40px)}.hero p{font-size:14px}.hero-actions{gap:8px}.hero-primary{width:100%;min-height:42px}.intro-grid{gap:8px;margin:11px 0}.intro-item{padding:13px}.card{padding:15px}.features{gap:9px}}
+
+/* Focused compact auth layout for small mobile screens */
+#authTabs{max-width:440px;gap:8px;margin:12px auto 7px}
+#authTabs button{font-size:13px;font-weight:650;min-height:36px;padding:8px 10px;border-radius:9px;line-height:1.2}
+#loginCard,#registerCard{max-width:440px;padding:18px 20px 14px;margin:8px auto 20px;border-radius:14px}
+#loginCard h2,#registerCard h2{font-size:20px;line-height:1.25;margin:0 0 11px}
+#loginCard label,#registerCard label{font-size:13px;margin:10px 0 4px}
+#loginCard input,#registerCard input{height:41px;min-height:41px;padding:8px 11px;font-size:16px;border-radius:8px}
+#loginCard form>button,#registerCard form>button{min-height:40px;padding:9px 12px;margin-top:14px;font-size:14px;border-radius:8px}
+#loginCard .status,#registerCard .status{min-height:0;margin:7px 0 0;font-size:12px}
+#loginCard .status:empty,#registerCard .status:empty{display:none}
+@media(max-width:640px){
+#authTabs{max-width:380px;gap:7px;margin:10px auto 6px}
+#authTabs button{font-size:12px;min-height:35px;padding:7px 8px}
+#loginCard,#registerCard{max-width:380px;padding:15px 16px 12px;margin:7px auto 15px}
+#loginCard h2,#registerCard h2{font-size:19px;margin-bottom:9px}
+#loginCard label,#registerCard label{font-size:12px;margin:9px 0 4px}
+#loginCard input,#registerCard input{height:40px;min-height:40px}
+#loginCard form>button,#registerCard form>button{min-height:39px;margin-top:12px}
+}
 </style>
 </head>
 <body><main><div class="site-top"><div class="brand" aria-label="RKU ONE">RKU <span>ONE</span></div><div style="display:flex;align-items:center;gap:8px"><label for="languageSelect">Language</label><select id="languageSelect" aria-label="Select language" style="padding:10px;border-radius:10px;font-size:14px"><option value="en">English</option><option value="pa">ਪੰਜਾਬੀ</option></select></div></div>
