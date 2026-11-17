@@ -29,7 +29,11 @@ async def lifespan(app: FastAPI):
 app = FastAPI(title="RKU ONE API", lifespan=lifespan)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["https://rku-one.onrender.com"],
+    allow_origins=[
+        "https://rku-one.onrender.com",
+        "https://rkuone.com",
+        "https://www.rkuone.com",
+    ],
     allow_methods=["GET", "POST"],
     allow_headers=["Content-Type", "Authorization"],
 )
