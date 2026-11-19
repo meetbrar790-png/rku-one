@@ -12,6 +12,8 @@ from mail_auth import issue_token, authenticated_id
 from profiles import setup_profiles, get_profile, save_profile
 from contacts import setup_contacts, list_contacts, save_contact, delete_contact
 from vip_shop_preview import number_preview, featured_previews
+from vip_shop_status import status_snapshot, is_issued_in_users
+from registration import get_connection
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -192,3 +194,19 @@ def vip_number_preview(numeric_id: str):
         return number_preview(numeric_id)
     except ValueError:
         raise HTTPException(status_code=400, detail="Invalid numeric ID")
+
+
+@app.get("/vip/status/{numeric_id}")
+def vip_number_status(numeric_id: str):
+    """Read issued-ID state only; unknown means NOT verified available."""
+    try:
+        # Validate before opening a database connection.
+        number_preview(numeric_id)
+    except ValueError:
+        raise HTTPException(status_code=400, detail="Invalid numeric ID")
+    try:
+        with get_connection() as conn:
+            return status_snapshot(numeric_id, lambda n: is_issued_in_users(conn, n))
+    except Exception:
+        logging.exception("VIP status lookup unavailable")
+        raise HTTPException(status_code=503, detail="Number status temporarily unavailable")
