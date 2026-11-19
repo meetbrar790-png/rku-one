@@ -79,7 +79,9 @@ class FunctionalHomepageStructureTests(unittest.TestCase):
         self.assertIn("n===1||n===11", self.source)
         self.assertIn("No number has been held or purchased.", self.source)
         self.assertIn("VIP payments are closed.", self.source)
-        self.assertIn("VIP sale candidate · Price to be confirmed", self.source)
+        self.assertIn("Numbers 13 and 786 are Special VIP listings at USD $4,999 each.", self.source)
+        self.assertIn("USD $9,999 · Availability unverified", self.source)
+        self.assertIn("USD $7,777 · Availability unverified", self.source)
         self.assertIn("Company IDs 1 and 11 are excluded from sale.", self.source)
         self.assertNotIn('id="vipCheckout"', self.source)
 
