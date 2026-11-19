@@ -57,5 +57,21 @@ class FunctionalHomepageStructureTests(unittest.TestCase):
             self.assertIn(marker, self.source)
 
 
+    def test_approved_design_has_four_feature_cards_and_globe(self):
+        self.assertEqual(self.source.count('class="intro-item"'), 4)
+        self.assertIn('class="trust-strip"', self.source)
+        self.assertIn('/* Approved white/blue reference:', self.source)
+        self.assertIn('content:"🌐"', self.source)
+
+    def test_hero_actions_point_to_real_auth_tabs(self):
+        for hero_id, target_id in (
+            ("heroRegister", "showRegister"),
+            ("heroLogin", "showLogin"),
+        ):
+            self.assertEqual(self.page.ids[hero_id][0], "a")
+            self.assertEqual(self.page.ids[hero_id][1].get("href"), "#authTabs")
+            self.assertIn('getElementById("'+hero_id+'").addEventListener("click"', self.source)
+            self.assertIn('getElementById("'+target_id+'").click()', self.source)
+
 if __name__ == "__main__":
     unittest.main()
