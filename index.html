@@ -110,7 +110,7 @@ footer{margin-top:24px}
 }
 </style>
 </head>
-<body><main><div class="site-top"><div class="brand" aria-label="RKU ONE">RKU <span>ONE</span></div><div style="display:flex;align-items:center;gap:8px"><label for="languageSelect">Language</label><select id="languageSelect" aria-label="Select language" style="padding:10px;border-radius:10px;font-size:14px"><option value="en">English</option><option value="pa">ਪੰਜਾਬੀ</option></select></div></div>
+<body><main><div class="site-top"><div class="brand" aria-label="RKU ONE">RKU <span>ONE</span></div><div style="display:flex;align-items:center;gap:8px"><label for="languageSelect">Language</label><select id="languageSelect" aria-label="Select language" style="padding:10px;border-radius:10px;font-size:14px"><option value="en">🌐 English (International)</option><option value="en-GB">🇬🇧 English (UK)</option><option value="en-AU">🇦🇺 English (Australia)</option><option value="en-NZ">🇳🇿 English (New Zealand)</option><option value="en-CA">🇨🇦 English (Canada)</option><option value="fr">🇫🇷 Français (French)</option><option value="de">🇩🇪 Deutsch (German)</option><option value="es">🇪🇸 Español (Spanish)</option><option value="it">🇮🇹 Italiano (Italian)</option><option value="pt">🇵🇹 Português (Portuguese)</option><option value="nl">🇳🇱 Nederlands (Dutch)</option><option value="pl">🇵🇱 Polski (Polish)</option><option value="sv">🇸🇪 Svenska (Swedish)</option></select></div></div>
 <header class="hero"><span class="hero-kicker">RKU ONE · Early Access</span><h1>One World.<br><em>One Numeric ID.</em></h1><p>A simpler way to connect. Discover your unique numeric identity and communicate directly with other RKU IDs.</p><div class="hero-actions"><a class="hero-primary" href="#authTabs">Sign in to RKU ONE <span aria-hidden="true">→</span></a><span class="hero-secondary">New accounts: limited beta access</span></div><p class="hero-note">Private beta in progress · RKU ID-to-ID Mail available for existing users</p></header>
 <section class="intro-grid" aria-label="RKU ONE highlights"><div class="intro-item"><span class="symbol" aria-hidden="true">◈</span><strong>Your own numeric identity</strong><p>A distinctive RKU ID built for a connected world.</p></div><div class="intro-item"><span class="symbol" aria-hidden="true">✉</span><strong>Direct ID-to-ID Mail</strong><p>Send and receive messages inside the RKU ONE network.</p></div><div class="intro-item"><span class="symbol" aria-hidden="true">◎</span><strong>Designed for simplicity</strong><p>Clear communication with an easy-to-use interface.</p></div></section>
 <div class="tabs" id="authTabs"><button type="button" id="showLogin" class="active">🔑 Login / ਲਾਗਇਨ</button><button type="button" id="showRegister">➕ New ID / ਨਵੀਂ ID</button></div><section class="card auth-card" id="registerCard" hidden><h2>Create your RKU ID / ਨਵੀਂ ID ਬਣਾਓ</h2><p class="muted">Every account receives its own unique number.</p>
@@ -223,7 +223,40 @@ const langMap = {
 const translationNodes=[];
 const textWalker=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT);
 while(textWalker.nextNode()){const node=textWalker.currentNode;const key=node.nodeValue.trim();if(langMap[key])translationNodes.push({node,key});}
-function setLanguage(lang){const choice=lang==="pa"?1:0;document.documentElement.lang=lang;for(const {node,key} of translationNodes)node.nodeValue=langMap[key][choice];document.getElementById("languageSelect").value=lang;try{localStorage.setItem("rkuLanguage",lang);}catch(e){}}
+// English regional variants are supported. Other listed languages are an
+// explicitly partial preview: untranslated content remains in English.
+const previewTranslations={
+fr:{"Language":"Langue","One World.":"Un seul monde.","One Numeric ID.":"Un identifiant numérique.","Login":"Connexion","Coming later":"Bientôt disponible"},
+de:{"Language":"Sprache","One World.":"Eine Welt.","One Numeric ID.":"Eine numerische ID.","Login":"Anmelden","Coming later":"Demnächst"},
+es:{"Language":"Idioma","One World.":"Un mundo.","One Numeric ID.":"Un ID numérico.","Login":"Iniciar sesión","Coming later":"Próximamente"},
+it:{"Language":"Lingua","One World.":"Un mondo.","One Numeric ID.":"Un ID numerico.","Login":"Accedi","Coming later":"Prossimamente"},
+pt:{"Language":"Idioma","One World.":"Um mundo.","One Numeric ID.":"Um ID numérico.","Login":"Entrar","Coming later":"Em breve"},
+nl:{"Language":"Taal","One World.":"Eén wereld.","One Numeric ID.":"Eén numerieke ID.","Login":"Inloggen","Coming later":"Binnenkort"},
+pl:{"Language":"Język","One World.":"Jeden świat.","One Numeric ID.":"Jeden identyfikator numeryczny.","Login":"Zaloguj się","Coming later":"Wkrótce"},
+sv:{"Language":"Språk","One World.":"En värld.","One Numeric ID.":"Ett numeriskt ID.","Login":"Logga in","Coming later":"Kommer snart"}
+};
+const localizedNodes=[];
+const allText=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT);
+while(allText.nextNode()){const node=allText.currentNode;if(node.parentElement?.closest("select"))continue;localizedNodes.push({node,original:node.nodeValue,key:node.nodeValue.trim()});}
+const previewNotice=document.createElement("p");
+previewNotice.id="languagePreviewNotice";previewNotice.setAttribute("role","status");
+previewNotice.style.cssText="display:none;font-size:12px;color:#52627c;text-align:right;margin:0 0 10px";
+document.querySelector(".site-top").insertAdjacentElement("afterend",previewNotice);
+function setLanguage(lang){
+ const select=document.getElementById("languageSelect");
+ if(!Array.from(select.options).some(o=>o.value===lang))lang="en";
+ const translations=previewTranslations[lang]||{};
+ document.documentElement.lang=lang.split("-")[0];
+ for(const {node,original,key} of localizedNodes){
+  const english=langMap[key]?.[0]||original;
+  node.nodeValue=translations[key]||english;
+ }
+ const preview=Object.prototype.hasOwnProperty.call(previewTranslations,lang);
+ previewNotice.style.display=preview?"block":"none";
+ previewNotice.textContent=preview?"Language preview: some text remains in English. Full translation is not yet available.":"";
+ select.value=lang;
+ try{localStorage.setItem("rkuLanguage",lang);}catch(e){}
+}
 document.getElementById("languageSelect").addEventListener("change",e=>setLanguage(e.target.value));
 let initialLanguage="en";try{initialLanguage=localStorage.getItem("rkuLanguage")||"en";}catch(e){}
 setLanguage(initialLanguage);
