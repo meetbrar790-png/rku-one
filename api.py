@@ -11,6 +11,9 @@ from mail_store import setup_mail, deliver, deliver_many, mailbox
 from mail_auth import issue_token, authenticated_id
 from profiles import setup_profiles, get_profile, save_profile
 from contacts import setup_contacts, list_contacts, save_contact, delete_contact
+from vip_shop_preview import number_preview, featured_previews
+from vip_shop_status import status_snapshot, is_issued_in_users
+from registration import get_connection
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -176,3 +179,34 @@ def contacts_remove(contact: ContactData, authorization: str | None = Header(def
     if contact.rku_id < 1:
         raise HTTPException(400, "Invalid RKU ID")
     return delete_contact(owner, contact.rku_id)
+
+
+@app.get("/vip/preview/featured")
+def vip_featured_preview():
+    """Informational catalogue only. No live inventory, reservations or payments."""
+    return {"items": featured_previews(), "sale_enabled": False, "inventory_connected": False}
+
+
+@app.get("/vip/preview/{numeric_id}")
+def vip_number_preview(numeric_id: str):
+    """Validate numeric input and show nonbinding price information."""
+    try:
+        return number_preview(numeric_id)
+    except ValueError:
+        raise HTTPException(status_code=400, detail="Invalid numeric ID")
+
+
+@app.get("/vip/status/{numeric_id}")
+def vip_number_status(numeric_id: str):
+    """Read issued-ID state only; unknown means NOT verified available."""
+    try:
+        # Validate before opening a database connection.
+        number_preview(numeric_id)
+    except ValueError:
+        raise HTTPException(status_code=400, detail="Invalid numeric ID")
+    try:
+        with get_connection() as conn:
+            return status_snapshot(numeric_id, lambda n: is_issued_in_users(conn, n))
+    except Exception:
+        logging.exception("VIP status lookup unavailable")
+        raise HTTPException(status_code=503, detail="Number status temporarily unavailable")

@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow"><title>RKU ONE — Local VIP Request Test</title>
+<style>
+body{font:16px system-ui;background:#0b1120;color:#f5f6fa;margin:0;padding:20px}
+main{max-width:520px;margin:auto}h1{color:#f0c86e}
+section{background:#182236;padding:20px;border-radius:16px}
+label{display:block;margin:15px 0 6px}input{width:100%;box-sizing:border-box;padding:12px;border-radius:9px;background:#0b1120;color:white;border:1px solid #8490a6}
+button{background:#f0c86e;color:#1d1608;border:0;border-radius:9px;padding:13px 18px;margin-top:20px;font-weight:bold}
+button:disabled{opacity:.5}p{line-height:1.55}#result{white-space:pre-wrap;overflow-wrap:anywhere}
+</style></head><body><main>
+<h1>RKU ONE VIP — Staging Test</h1>
+<p>This page is for developers testing on their own device only. It cannot reserve, sell or allocate any number. Requests disappear when the isolated test server restarts.</p>
+<section><form id="form">
+<label for="number">VIP number (2–1000)</label><input id="number" required inputmode="numeric" pattern="[1-9][0-9]*" maxlength="4" value="1000">
+<label for="token">Temporary test login token</label><input id="token" required type="password" autocomplete="off" spellcheck="false">
+<p>Only enter a disposable staging token. Never enter a real account token, password or production secret.</p>
+<button id="send" type="submit">Send test interest request</button>
+</form><p id="result" role="status" aria-live="polite">Nothing submitted.</p></section>
+<p>Runs only with a test server on this same device at 127.0.0.1:8001. No remote server or production API is contacted.</p>
+<script>
+(()=>{
+"use strict";
+const form=document.getElementById("form"),result=document.getElementById("result"),button=document.getElementById("send");
+form.addEventListener("submit",async e=>{
+ e.preventDefault();
+ const id=document.getElementById("number").value;
+ if(!/^[1-9][0-9]*$/.test(id)||Number(id)<2||Number(id)>1000||id==="11"){result.textContent="Not an eligible VIP test number.";return;}
+ const token=document.getElementById("token").value.trim();
+ if(!token){result.textContent="A disposable test token is required.";return;}
+ button.disabled=true;result.textContent="Sending to local test server…";
+ try{
+  const key="local-"+(crypto.randomUUID?crypto.randomUUID():String(Date.now())+"-"+Math.random().toString(36).slice(2));
+  const response=await fetch("http://127.0.0.1:8001/staging/vip/interest",{
+   method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+token},
+   body:JSON.stringify({numeric_id:id,request_key:key})
+  });
+  const data=await response.json();
+  result.textContent=response.ok
+   ?"Test request received. Status: "+data.status+". Number NOT reserved; no payment."
+   :"Test request rejected ("+response.status+").";
+ }catch{result.textContent="Local staging server unavailable. Nothing was submitted."}
+ finally{button.disabled=false;document.getElementById("token").value="";}
+});
+})();
+</script></main></body></html>

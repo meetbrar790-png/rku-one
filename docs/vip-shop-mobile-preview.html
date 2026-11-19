@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow"><title>RKU ONE | VIP Number Shop Preview</title>
+<style>
+:root{color-scheme:dark;font-family:system-ui,sans-serif;background:#090d18;color:#f7f8fa}*{box-sizing:border-box}
+body{margin:0}main{max-width:850px;margin:auto;padding:22px 16px 55px}
+header{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.brand{font-weight:900;font-size:24px;letter-spacing:2px}.brand b,.gold{color:#efc56b}
+.tag{font-size:12px;border:1px solid #8b703c;border-radius:30px;padding:8px 11px;color:#f2d28d}
+h1{font-size:clamp(30px,7vw,49px);margin:44px 0 12px}.muted{color:#b9c3d6;line-height:1.6}
+.panel{background:#151c2c;border:1px solid #303b53;border-radius:20px;padding:22px;margin:22px 0}
+label{display:block;margin-bottom:9px}input{width:100%;padding:15px;background:#0a1020;border:1px solid #77829a;border-radius:12px;color:white;font-size:21px}
+button{border:0;border-radius:12px;padding:13px 17px;font-weight:750;cursor:pointer;background:#f0c86e;color:#18140a}
+button:focus-visible,input:focus-visible{outline:3px solid #f0c86e;outline-offset:3px}
+button:disabled{opacity:.5;cursor:not-allowed}.search{display:flex;gap:10px}.search input{min-width:0;flex:1}
+.result{margin-top:20px;border-top:1px solid #303b53;padding-top:16px}
+.big{font-size:30px;font-weight:850;color:#f0c86e;margin:8px 0}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(135px,1fr));gap:12px}
+.tile{background:#192238;color:#fff;border:1px solid #49546b;text-align:left;display:flex;flex-direction:column;gap:5px}
+.tile strong{font-size:23px}.tile small{color:#c9d2e2}
+.warning{padding:15px;background:#292315;border-left:3px solid #f0c86e;line-height:1.6;border-radius:6px}
+.actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:15px}.secondary{background:#303c56;color:white}
+#feedback{min-height:25px;color:#d7dfed;margin-top:12px}
+@media(max-width:430px){.search{flex-direction:column}.search button{width:100%}}
+</style></head><body><main>
+<header><div class="brand">RKU <b>ONE</b></div><div class="tag">PREVIEW ONLY · PAYMENTS OFF</div></header>
+<h1>Choose your <span class="gold">RKU ID</span></h1>
+<p class="muted">Explore proposed VIP prices and prepare a request to express interest. No live inventory is connected; no number is held or sold.</p>
+<section class="panel"><label for="number">Search numeric ID</label><div class="search">
+<input id="number" inputmode="numeric" autocomplete="off" maxlength="18" value="1000" aria-describedby="feedback">
+<button id="search" type="button">Check number</button></div>
+<div class="result" aria-live="polite"><strong id="category">VIP Silver</strong><div id="price" class="big">$999 USD</div><div class="muted" id="availability">Availability not verified</div>
+<div class="actions"><button id="request" type="button">Prepare request</button><button id="copy" class="secondary" type="button" disabled>Copy request text</button></div>
+<div id="feedback" role="status"></div></div></section>
+<section><h2>Featured VIP numbers</h2><div class="grid" id="featured"></div></section>
+<p class="warning">Founder ID 1 and company ID 11 are not for sale. Special IDs 13 and 786 may be reserved and are not confirmed available. Existing assigned or reserved IDs must never be reassigned. IDs 1001+ are free registration IDs, not VIP products. Prices are informational USD list prices.</p>
+<p class="muted">Request is a local draft only. Copying text does not submit it. No backend request, payment, checkout, or allocation occurs.</p>
+</main><script>
+(()=>{
+"use strict";
+const $=id=>document.getElementById(id);
+const prices={2:9999,3:7999,4:5999,5:4999,6:3999,7:7777,8:6999,9:4999,10:5999,13:4999,786:4999,100:1499,1000:999};
+const featured=[2,3,7,10,13,100,786,1000];
+let selected=null,requestText="";
+function details(raw){
+ if(!/^[1-9][0-9]*$/.test(raw)||raw.length>18)return null;
+ const n=BigInt(raw);
+ if(n>=1000000000000000000n)return null;
+ if(n===1n)return {name:"Founder ID",price:null,blocked:true};
+ if(n===11n)return {name:"Company reserved",price:null,blocked:true};
+ if(n>=1001n)return {name:"Free registration ID",price:0,blocked:true};
+ const x=Number(n);
+ let name=x===13||x===786?"Special VVIP":x<=10?"VVIP":x<=100?"VIP Gold":"VIP Silver";
+ return {name,price:prices[x]??(x<=100?499:199),blocked:false};
+}
+function render(){
+ const raw=$("number").value;
+ const d=details(raw);
+ selected=d&&!d.blocked?raw:null;requestText="";
+ $("copy").disabled=true;$("feedback").textContent="";
+ $("category").textContent=d?d.name:"Invalid number";
+ $("price").textContent=!d?"—":d.price===null?"Not for sale":d.price===0?"FREE":("$"+d.price.toLocaleString("en-US")+" USD");
+ $("availability").textContent=d?"Live availability not verified · no number reserved":"Enter a positive number without leading zeros";
+ $("request").disabled=!selected;
+}
+$("search").addEventListener("click",render);
+$("number").addEventListener("input",render);
+$("request").addEventListener("click",()=>{
+ if(!selected)return;
+ requestText="RKU ONE VIP interest request — ID #"+selected+". I understand that availability has not been verified, this is not a reservation or purchase, and no payment has been made.";
+ $("feedback").textContent="Request text prepared on this device. Copy it; it has NOT been sent.";
+ $("copy").disabled=false;
+});
+$("copy").addEventListener("click",async()=>{
+ if(!requestText)return;
+ try{await navigator.clipboard.writeText(requestText);$("feedback").textContent="Request text copied. Not submitted.";}
+ catch{$("feedback").textContent="Clipboard unavailable. Request has not been sent.";}
+});
+for(const n of featured){
+ const b=document.createElement("button");b.type="button";b.className="tile";
+ const strong=document.createElement("strong");strong.textContent="#"+n;
+ const small=document.createElement("small");small.textContent="$"+prices[n].toLocaleString("en-US")+" USD · unverified";
+ b.append(strong,small);b.addEventListener("click",()=>{$("number").value=String(n);render();$("number").focus()});
+ $("featured").append(b);
+}
+render();
+})();
+</script></body></html>
