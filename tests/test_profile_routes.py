@@ -51,5 +51,40 @@ class ProfileRouteTests(unittest.TestCase):
         save.assert_not_called()
 
 
+    def test_profile_update_requires_login_and_does_not_save(self):
+        with patch("api.save_profile") as save:
+            with self.assertRaises(HTTPException) as error:
+                update_profile(ProfileData(name="Private"), authorization=None)
+        self.assertEqual(error.exception.status_code, 401)
+        save.assert_not_called()
+
+    def test_profile_https_logo_and_explicit_public_consent(self):
+        with patch("api.authenticated_id", return_value=1001), patch(
+            "api.save_profile", return_value={"saved": True}
+        ) as save:
+            result = update_profile(
+                ProfileData(
+                    name=" Test Person ",
+                    company=" Test Company ",
+                    logo_url="https://example.com/logo.png",
+                    public=True,
+                ),
+                authorization="Bearer isolated-test",
+            )
+        self.assertEqual(result, {"saved": True})
+        save.assert_called_once_with(
+            1001, "Test Person", "Test Company", "https://example.com/logo.png", True
+        )
+
+    def test_private_profile_consent_remains_false_with_logo(self):
+        with patch("api.authenticated_id", return_value=1001), patch(
+            "api.save_profile", return_value={"saved": True}
+        ) as save:
+            update_profile(
+                ProfileData(logo_url="https://example.com/logo.png", public=False),
+                authorization="Bearer isolated-test",
+            )
+        save.assert_called_once_with(1001, "", "", "https://example.com/logo.png", False)
+
 if __name__ == "__main__":
     unittest.main()

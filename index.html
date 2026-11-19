@@ -108,11 +108,27 @@ footer{margin-top:24px}
 #loginCard input,#registerCard input{height:40px;min-height:40px}
 #loginCard form>button,#registerCard form>button{min-height:39px;margin-top:12px}
 }
+
+/* Approved white-and-blue homepage: unobtrusive, closed-by-default language menu */
+.language-picker{position:relative;display:flex;align-items:center;gap:8px}
+.language-picker label{margin:0}
+.language-trigger{width:auto;margin:0;padding:10px 12px;border:1px solid #bfd4fb;background:#fff;color:#17345c;font-size:13px;border-radius:12px;box-shadow:none;max-width:210px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.language-panel{position:absolute;right:0;top:calc(100% + 8px);width:min(340px,calc(100vw - 32px));max-height:min(65vh,480px);overflow:auto;background:#fff;color:#193154;border:1px solid #cbdcf5;border-radius:16px;box-shadow:0 16px 44px #16345d30;padding:12px;z-index:40}
+.language-panel[hidden]{display:none!important}
+.language-search{width:100%;background:#fff!important;color:#193154!important;border:1px solid #bfd4fb!important;margin:0 0 10px}
+.language-choice{display:block;width:100%;text-align:left;background:#fff;color:#193154;border:0;border-radius:9px;margin:2px 0;padding:10px 8px;font-size:14px;box-shadow:none}
+.language-choice:hover,.language-choice[aria-selected="true"]{background:#e7f1ff}
+.language-empty{font-size:13px;color:#52627c}
+#languageSelect{display:none!important}
+@media(max-width:520px){.language-picker{gap:5px}.language-picker label{font-size:12px}.language-trigger{max-width:160px;padding:9px 8px}.language-panel{right:0}}
+
+/* Approved white/blue reference: presentation-only homepage styling */
+main{max-width:1440px}.site-top{min-height:76px}.brand{font-size:clamp(26px,3vw,40px);font-weight:900}.brand:after{content:"";display:block;height:4px;border-radius:50%;background:#e6b21e;margin:3px 7px 0;transform:rotate(-1deg)}.site-links{display:flex;gap:20px;margin:auto}.site-links a{font-size:14px;color:#112650;font-weight:700;text-decoration:none}.site-links a:first-child{color:#0868ee;border-bottom:3px solid #0868ee;padding:12px 3px}.hero{text-align:left;padding:55px 40px;min-height:425px;background:radial-gradient(circle at 72% 35%,#87cbff,#dcefff 34%,#f7fbff 70%);box-shadow:none}.hero:before{width:360px;height:360px;right:5%;top:7%;border:0;background:radial-gradient(circle at 32% 25%,#b9f3ff,#208eff 45%,#0056bd 88%);box-shadow:0 0 55px #3ba4fa80;opacity:.75}.hero:after{content:"🌐";position:absolute;right:9%;top:12%;font-size:230px;opacity:.23;pointer-events:none}.hero>*{position:relative;z-index:1}.hero h1{margin:24px 0 17px;max-width:700px;font-size:clamp(44px,5.4vw,78px)}.hero p{margin:0;max-width:570px;font-size:clamp(17px,2vw,24px);line-height:1.45}.hero-actions{justify-content:flex-start}.hero-primary{font-size:17px;min-height:53px;border-radius:13px}.hero-register{background:linear-gradient(#137aff,#0341c9)}.hero-login{background:#fff;color:#0645c6;border:2px solid #1260e8;box-shadow:none}.hero-secondary{display:none}.intro-grid{grid-template-columns:repeat(4,minmax(0,1fr))}.intro-item{text-align:center;min-height:160px}.intro-item .symbol{font-size:34px;color:#0b70f3}.intro-item strong{font-size:18px}.trust-strip{display:flex;flex-wrap:wrap;justify-content:space-around;gap:14px;padding:23px 8px;font-weight:650;color:#17365c}.language-trigger{border:2px solid #0a5bde}@media(max-width:1100px){.site-links{display:none}.intro-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.hero:before{opacity:.2;right:-110px}.hero:after{opacity:.1;right:-60px}}@media(max-width:640px){.hero{padding:33px 18px;min-height:0}.hero h1{font-size:clamp(36px,9vw,52px)}.hero p{font-size:17px}.hero-actions{flex-direction:row;gap:8px}.hero-primary{flex:1;width:auto;min-width:120px;font-size:13px;padding:10px 8px}.intro-item{min-height:140px;padding:14px 10px}.intro-item strong{font-size:15px}.intro-item .symbol{font-size:27px}.trust-strip{font-size:12px}}
 </style>
 </head>
-<body><main><div class="site-top"><div class="brand" aria-label="RKU ONE">RKU <span>ONE</span></div><div style="display:flex;align-items:center;gap:8px"><label for="languageSelect">Language</label><select id="languageSelect" aria-label="Select language" style="padding:10px;border-radius:10px;font-size:14px"><option value="en">English</option><option value="pa">ਪੰਜਾਬੀ</option></select></div></div>
-<header class="hero"><span class="hero-kicker">RKU ONE · Early Access</span><h1>One World.<br><em>One Numeric ID.</em></h1><p>A simpler way to connect. Discover your unique numeric identity and communicate directly with other RKU IDs.</p><div class="hero-actions"><a class="hero-primary" href="#authTabs">Sign in to RKU ONE <span aria-hidden="true">→</span></a><span class="hero-secondary">New accounts: limited beta access</span></div><p class="hero-note">Private beta in progress · RKU ID-to-ID Mail available for existing users</p></header>
-<section class="intro-grid" aria-label="RKU ONE highlights"><div class="intro-item"><span class="symbol" aria-hidden="true">◈</span><strong>Your own numeric identity</strong><p>A distinctive RKU ID built for a connected world.</p></div><div class="intro-item"><span class="symbol" aria-hidden="true">✉</span><strong>Direct ID-to-ID Mail</strong><p>Send and receive messages inside the RKU ONE network.</p></div><div class="intro-item"><span class="symbol" aria-hidden="true">◎</span><strong>Designed for simplicity</strong><p>Clear communication with an easy-to-use interface.</p></div></section>
+<body><main><div class="site-top"><div class="brand" aria-label="RKU ONE">RKU <span>ONE</span></div><nav class="site-links" aria-label="Main navigation"><a href="#home">Home</a><a href="#features">Features</a><a href="#features">Cloud</a><a href="#trust">Security</a><a href="#trust">About</a><a href="#trust">Support</a></nav><div class="language-picker"><label for="languageTrigger">Language</label><button id="languageTrigger" class="language-trigger" type="button" aria-expanded="false" aria-controls="languagePanel">🌐 English (International) ▾</button><div id="languagePanel" class="language-panel" hidden><input id="languageSearch" class="language-search" type="search" placeholder="Search language or country" aria-label="Search language or country"><div id="languageChoices" role="listbox" aria-label="Available language choices"></div><p id="languageEmpty" class="language-empty" hidden>No matching language</p></div><select id="languageSelect" aria-label="Select language" style="padding:10px;border-radius:10px;font-size:14px"><option value="en">🌐 English (International)</option><option value="en-GB">🇬🇧 English (UK)</option><option value="en-AU">🇦🇺 English (Australia)</option><option value="en-NZ">🇳🇿 English (New Zealand)</option><option value="en-CA">🇨🇦 English (Canada)</option><option value="fr">🇫🇷 Français (French)</option><option value="de">🇩🇪 Deutsch (German)</option><option value="es">🇪🇸 Español (Spanish)</option><option value="it">🇮🇹 Italiano (Italian)</option><option value="pt">🇵🇹 Português (Portuguese)</option><option value="nl">🇳🇱 Nederlands (Dutch)</option><option value="pl">🇵🇱 Polski (Polish)</option><option value="sv">🇸🇪 Svenska (Swedish)</option><option value="en-US">🇺🇸 English (USA)</option><option value="en-IN">🇮🇳 English (India)</option><option value="zh-CN">🇨🇳 中文 (Chinese — Simplified)</option><option value="hi">🇮🇳 हिन्दी (Hindi)</option><option value="ar">🇦🇪 العربية (Arabic)</option><option value="bn">🇧🇩 বাংলা (Bengali)</option><option value="ru">🇷🇺 Русский (Russian)</option><option value="ja">🇯🇵 日本語 (Japanese)</option><option value="ko">🇰🇷 한국어 (Korean)</option><option value="tr">🇹🇷 Türkçe (Turkish)</option><option value="id">🇮🇩 Bahasa Indonesia</option><option value="th">🇹🇭 ภาษาไทย (Thai)</option><option value="vi">🇻🇳 Tiếng Việt (Vietnamese)</option></select></div></div>
+<header class="hero" id="home"><span class="hero-kicker">RKU ONE · Early Access</span><h1>One World.<br><em>One Numeric ID.</em></h1><p>A simpler way to connect. Discover your unique numeric identity and communicate directly with other RKU IDs.</p><div class="hero-actions"><a class="hero-primary hero-register" href="#authTabs" id="heroRegister">Create My RKU ID</a><a class="hero-primary hero-login" href="#authTabs" id="heroLogin">Login</a><span class="hero-secondary">New accounts: limited beta access</span></div><p class="hero-note">Private beta in progress · RKU ID-to-ID Mail available for existing users</p></header>
+<section class="intro-grid" id="features" aria-label="RKU ONE highlights"><div class="intro-item"><span class="symbol" aria-hidden="true">◈</span><strong>Your own numeric identity</strong><p>A distinctive RKU ID built for a connected world.</p></div><div class="intro-item"><span class="symbol" aria-hidden="true">✉</span><strong>Direct ID-to-ID Mail</strong><p>Send and receive messages inside the RKU ONE network.</p></div><div class="intro-item"><span class="symbol" aria-hidden="true">◎</span><strong>Designed for simplicity</strong><p>Clear communication with an easy-to-use interface.</p></div><div class="intro-item"><span class="symbol" aria-hidden="true">☁</span><strong>RKU Cloud</strong><p>Cloud storage features are under development.</p></div></section><section class="trust-strip" id="trust"><span>♢ Privacy First</span><span>♙ Security Focus</span><span>🌐 Global Access</span><span>ϟ Simple Experience</span></section>
 <div class="tabs" id="authTabs"><button type="button" id="showLogin" class="active">🔑 Login / ਲਾਗਇਨ</button><button type="button" id="showRegister">➕ New ID / ਨਵੀਂ ID</button></div><section class="card auth-card" id="registerCard" hidden><h2>Create your RKU ID / ਨਵੀਂ ID ਬਣਾਓ</h2><p class="muted">Every account receives its own unique number.</p>
 <form id="register"><label for="regEmail">Email</label><input id="regEmail" type="email" autocomplete="email" required>
 <label for="regPass">Password (at least 12 characters)</label><input id="regPass" type="password" autocomplete="new-password" minlength="12" required>
@@ -223,8 +239,69 @@ const langMap = {
 const translationNodes=[];
 const textWalker=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT);
 while(textWalker.nextNode()){const node=textWalker.currentNode;const key=node.nodeValue.trim();if(langMap[key])translationNodes.push({node,key});}
-function setLanguage(lang){const choice=lang==="pa"?1:0;document.documentElement.lang=lang;for(const {node,key} of translationNodes)node.nodeValue=langMap[key][choice];document.getElementById("languageSelect").value=lang;try{localStorage.setItem("rkuLanguage",lang);}catch(e){}}
+// English regional variants are supported. Other listed languages are an
+// explicitly partial preview: untranslated content remains in English.
+const previewTranslations={
+fr:{"Language":"Langue","One World.":"Un seul monde.","One Numeric ID.":"Un identifiant numérique.","Login":"Connexion","Coming later":"Bientôt disponible"},
+de:{"Language":"Sprache","One World.":"Eine Welt.","One Numeric ID.":"Eine numerische ID.","Login":"Anmelden","Coming later":"Demnächst"},
+es:{"Language":"Idioma","One World.":"Un mundo.","One Numeric ID.":"Un ID numérico.","Login":"Iniciar sesión","Coming later":"Próximamente"},
+it:{"Language":"Lingua","One World.":"Un mondo.","One Numeric ID.":"Un ID numerico.","Login":"Accedi","Coming later":"Prossimamente"},
+pt:{"Language":"Idioma","One World.":"Um mundo.","One Numeric ID.":"Um ID numérico.","Login":"Entrar","Coming later":"Em breve"},
+nl:{"Language":"Taal","One World.":"Eén wereld.","One Numeric ID.":"Eén numerieke ID.","Login":"Inloggen","Coming later":"Binnenkort"},
+pl:{"Language":"Język","One World.":"Jeden świat.","One Numeric ID.":"Jeden identyfikator numeryczny.","Login":"Zaloguj się","Coming later":"Wkrótce"},
+sv:{"Language":"Språk","One World.":"En värld.","One Numeric ID.":"Ett numeriskt ID.","Login":"Logga in","Coming later":"Kommer snart"}
+};
+const localizedNodes=[];
+const allText=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT);
+while(allText.nextNode()){const node=allText.currentNode;if(node.parentElement?.closest("select"))continue;localizedNodes.push({node,original:node.nodeValue,key:node.nodeValue.trim()});}
+const previewNotice=document.createElement("p");
+previewNotice.id="languagePreviewNotice";previewNotice.setAttribute("role","status");
+previewNotice.style.cssText="display:none;font-size:12px;color:#52627c;text-align:right;margin:0 0 10px";
+document.querySelector(".site-top").insertAdjacentElement("afterend",previewNotice);
+function setLanguage(lang){
+ const select=document.getElementById("languageSelect");
+ if(!Array.from(select.options).some(o=>o.value===lang))lang="en";
+ const translations=previewTranslations[lang]||{};
+ document.documentElement.lang=lang.split("-")[0];
+ for(const {node,original,key} of localizedNodes){
+  const english=langMap[key]?.[0]||original;
+  node.nodeValue=translations[key]||english;
+ }
+ const preview=Object.prototype.hasOwnProperty.call(previewTranslations,lang);
+ previewNotice.style.display=preview?"block":"none";
+ previewNotice.textContent=preview?"Language preview: some text remains in English. Full translation is not yet available.":"";
+ select.value=lang;
+ languageTrigger.textContent=select.selectedOptions[0].textContent+" ▾";
+ if(!languagePanel.hidden)renderLanguageChoices();
+ try{localStorage.setItem("rkuLanguage",lang);}catch(e){}
+}
+
+const languageTrigger=document.getElementById("languageTrigger");
+const languagePanel=document.getElementById("languagePanel");
+const languageSearch=document.getElementById("languageSearch");
+const languageChoices=document.getElementById("languageChoices");
+const languageEmpty=document.getElementById("languageEmpty");
+const languageSelect=document.getElementById("languageSelect");
+const languageCountryKeywords={"en-GB":"britain united kingdom england","en-AU":"australia","en-NZ":"new zealand","en-CA":"canada","en-US":"united states america usa","en-IN":"india","zh-CN":"china","hi":"india","bn":"bangladesh","ar":"arabic middle east"};
+function closeLanguageMenu(){languagePanel.hidden=true;languageTrigger.setAttribute("aria-expanded","false");}
+function renderLanguageChoices(){
+ const q=languageSearch.value.trim().toLocaleLowerCase();languageChoices.replaceChildren();
+ let count=0;
+ for(const opt of languageSelect.options){
+  if(!(opt.textContent+" "+(languageCountryKeywords[opt.value]||"")).toLocaleLowerCase().includes(q))continue;
+  const choice=document.createElement("button");choice.type="button";choice.className="language-choice";choice.setAttribute("role","option");choice.setAttribute("aria-selected",String(opt.value===languageSelect.value));
+  choice.textContent=opt.textContent;
+  choice.addEventListener("click",()=>{setLanguage(opt.value);closeLanguageMenu();languageTrigger.focus();});
+  languageChoices.appendChild(choice);count++;
+ }
+ languageEmpty.hidden=count!==0;
+}
+languageTrigger.addEventListener("click",()=>{const opening=languagePanel.hidden;languagePanel.hidden=!opening;languageTrigger.setAttribute("aria-expanded",String(opening));if(opening){languageSearch.value="";renderLanguageChoices();languageSearch.focus();}});
+languageSearch.addEventListener("input",renderLanguageChoices);
+document.addEventListener("keydown",event=>{if(event.key==="Escape"&&!languagePanel.hidden){closeLanguageMenu();languageTrigger.focus();}});
+document.addEventListener("click",event=>{if(!event.target.closest(".language-picker"))closeLanguageMenu();});
+
 document.getElementById("languageSelect").addEventListener("change",e=>setLanguage(e.target.value));
 let initialLanguage="en";try{initialLanguage=localStorage.getItem("rkuLanguage")||"en";}catch(e){}
 setLanguage(initialLanguage);
-</script></body></html>
+</script><script>document.getElementById("heroRegister").addEventListener("click",()=>document.getElementById("showRegister").click());document.getElementById("heroLogin").addEventListener("click",()=>document.getElementById("showLogin").click());</script></body></html>
