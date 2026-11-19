@@ -85,5 +85,14 @@ class FunctionalHomepageStructureTests(unittest.TestCase):
         self.assertIn("Company IDs 1 and 11 are excluded from sale.", self.source)
         self.assertNotIn('id="vipCheckout"', self.source)
 
+    def test_vip_catalogue_hidden_until_crown_clicked(self):
+        self.assertIn('id="vip-numbers" class="vip-footer vip-catalogue" hidden', self.source)
+        self.assertIn('data-vip-toggle aria-controls="vip-numbers" aria-expanded="false"', self.source)
+        self.assertIn('class="vip-hero-action"', self.source)
+        self.assertIn('id="vipClose"', self.source)
+        self.assertIn('catalogue.hidden=!open', self.source)
+        self.assertIn('if(location.hash==="#vip-numbers")setOpen(true)', self.source)
+        self.assertIn("VIP payments are closed.", self.source)
+
 if __name__ == "__main__":
     unittest.main()
