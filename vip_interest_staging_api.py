@@ -8,9 +8,11 @@ from fastapi import FastAPI, Header, HTTPException
 from pydantic import BaseModel, Field
 from mail_auth import authenticated_id
 from vip_interest_test_store import record_test_interest
+from vip_interest_test_limiter import TestOnlyInterestLimiter
 
 app = FastAPI(title="RKU ONE VIP Interest Staging Prototype")
 db = sqlite3.connect(":memory:", check_same_thread=False)
+limiter = TestOnlyInterestLimiter(max_requests=5, window_seconds=60)
 
 
 class InterestInput(BaseModel):
@@ -21,6 +23,8 @@ class InterestInput(BaseModel):
 @app.post("/staging/vip/interest")
 def submit_staging_interest(data: InterestInput, authorization: str | None = Header(default=None)):
     owner = authenticated_id(authorization)
+    if not limiter.allow(owner):
+        raise HTTPException(status_code=429, detail="Too many staging requests; try later")
     try:
         with db:
             result = record_test_interest(db, data.numeric_id, owner, data.request_key)
