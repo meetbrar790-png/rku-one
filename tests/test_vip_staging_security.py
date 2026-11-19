@@ -13,11 +13,12 @@ from unittest.mock import patch
 
 from fastapi import HTTPException
 from mail_auth import issue_token
-from vip_interest_staging_api import InterestInput, submit_staging_interest
+from vip_interest_staging_api import InterestInput, submit_staging_interest, limiter
 
 
 class VipStagingSecurityTests(unittest.TestCase):
     def setUp(self):
+        limiter._history.clear()
         self.secret = patch.dict(os.environ, {"RKU_SESSION_SECRET": "isolated-test-only-secret"})
         self.secret.start()
         self.addCleanup(self.secret.stop)
