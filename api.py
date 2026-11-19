@@ -11,6 +11,8 @@ from mail_store import setup_mail, deliver, deliver_many, mailbox
 from mail_auth import issue_token, authenticated_id
 from profiles import setup_profiles, get_profile, save_profile
 from contacts import setup_contacts, list_contacts, save_contact, delete_contact
+from registration import get_connection
+from vip_public_catalogue import visible_featured_ids
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -63,6 +65,20 @@ class UserData(BaseModel):
 @app.get("/")
 def home():
     return {"message": "RKU ONE API Ready"}
+
+
+@app.get("/vip/catalogue")
+def vip_public_catalogue():
+    # Fail closed: no cards are displayed when issued-ID lookup is unavailable.
+    try:
+        with get_connection() as conn:
+            conn.execute("SET TRANSACTION READ ONLY")
+            visible = visible_featured_ids(conn)
+        return {"visible_ids": visible, "availability_verified": False,
+                "sale_enabled": False, "reservation_enabled": False}
+    except Exception:
+        logging.exception("VIP catalogue issued-ID filter failed")
+        raise HTTPException(status_code=503, detail="VIP catalogue temporarily unavailable")
 
 
 @app.post("/register")
