@@ -79,10 +79,13 @@ class FunctionalHomepageStructureTests(unittest.TestCase):
         self.assertIn("n===1||n===11", self.source)
         self.assertIn("No number has been held or purchased.", self.source)
         self.assertIn("VIP payments are closed.", self.source)
-        self.assertIn("Numbers 13 and 786 are Special VIP listings at USD $4,999 each.", self.source)
+        self.assertIn("<strong>13</strong><small>USD $4,999", self.source)
+        self.assertIn("<strong>786</strong><small>USD $4,999", self.source)
         self.assertIn("USD $9,999 · Availability unverified", self.source)
         self.assertIn("USD $7,777 · Availability unverified", self.source)
-        self.assertIn("Company IDs 1 and 11 are excluded from sale.", self.source)
+        self.assertNotIn("<strong>1</strong><small>", self.source)
+        self.assertNotIn("<strong>11</strong><small>", self.source)
+        self.assertNotIn("Company IDs 1 and 11 are excluded from sale.", self.source)
         self.assertNotIn('id="vipCheckout"', self.source)
 
     def test_vip_catalogue_hidden_until_crown_clicked(self):
