@@ -49,8 +49,8 @@ class FunctionalHomepageStructureTests(unittest.TestCase):
 
     def test_user_actions_still_have_handlers(self):
         for marker in (
-            'getElementById("login")',
-            'getElementById("register")',
+            'send("login"',
+            'send("register"',
             'getElementById("compose")',
             'getElementById("profileForm")',
         ):
