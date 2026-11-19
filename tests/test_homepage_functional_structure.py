@@ -73,5 +73,13 @@ class FunctionalHomepageStructureTests(unittest.TestCase):
             self.assertIn('getElementById("'+hero_id+'").addEventListener("click"', self.source)
             self.assertIn('getElementById("'+target_id+'").click()', self.source)
 
+    def test_vip_selector_is_request_only_and_reserved_ids_protected(self):
+        for marker in ('id="vip-numbers"', 'id="vipChoiceForm"', 'id="vipChoiceInput"', 'id="vipChoiceResult"'):
+            self.assertIn(marker, self.source)
+        self.assertIn("n===1||n===11||n===13||n===786", self.source)
+        self.assertIn("No number has been held or purchased.", self.source)
+        self.assertIn("VIP payments are closed.", self.source)
+        self.assertNotIn('id="vipCheckout"', self.source)
+
 if __name__ == "__main__":
     unittest.main()
