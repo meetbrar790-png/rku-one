@@ -18,7 +18,7 @@ def validate_numeric_id(value):
     return number if 1 <= number <= 9223372036854775807 else None
 
 def verify_numeric_id_password(conn, numeric_id, password):
-    """Read-only check; callers must enforce rate limits and token issuance."""
+    """Read-only check; NOT a public login endpoint. Caller must enforce\n    per-ID and per-IP rate limits, generic errors and secure token issuance.\n    """
     number = validate_numeric_id(numeric_id)
     if number is None or not isinstance(password, str) or len(password) > 256:
         return None
